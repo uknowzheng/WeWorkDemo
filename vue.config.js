@@ -1,4 +1,3 @@
-const TerserPlugin = require('terser-webpack-plugin');
 const config = require('./src/config')
 
 
