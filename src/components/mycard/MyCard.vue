@@ -28,10 +28,6 @@
           :height="16"
         ></Badge>
       </router-link>
-      <router-link
-        to="/game"
-        class="icon iconfont icon-collection"
-      ></router-link>
     </div>
     <footer>
       <i class="icon iconfont icon-san"></i>

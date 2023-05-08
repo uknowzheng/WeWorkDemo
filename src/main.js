@@ -4,10 +4,9 @@ import router from "./router";
 import config from "@/config";
 import store from "./store/index.js";
 import cdire from "./libs/directive/index";
-import VueMaterial from "vue-material";
+import ElementUI from "element-ui";
+import "element-ui/lib/theme-chalk/index.css";
 import "@/assets/icons/iconfont.css";
-import "vue-material/dist/vue-material.min.css";
-import "vue-material/dist/theme/default.css";
 
 //自定义全局组件
 import CusConfirm from "@/components/other/confirm/CusConfirm";
@@ -23,8 +22,7 @@ Vue.prototype.$config = config;
 
 Vue.config.productionTip = false;
 
-Vue.use(VueMaterial);
-
+Vue.use(ElementUI);
 // 拖拽命令
 const directive = {
   drag: cdire.drag,

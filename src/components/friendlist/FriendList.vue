@@ -115,7 +115,7 @@ export default {
       font-size: 0;
 
       &:hover {
-        background-color: #DCDADA;
+
       }
 
       &.active {
