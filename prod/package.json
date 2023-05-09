@@ -1,0 +1,11 @@
+{
+  "name": "wework",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "serve": "serve ./dist"
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
+  }
+}
