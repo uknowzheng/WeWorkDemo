@@ -4,7 +4,7 @@
       <SearchList :placeholder="placeholder" v-drag></SearchList>
       <ChatList></ChatList>
     </div>
-    <div class="chatbox">
+    <div class="chatbox" v-if="selectChatId">
       <MessageChat class="message" :key="selectChatId"></MessageChat>
       <VText class="text"></VText>
     </div>
@@ -22,7 +22,7 @@ import FriendChatInfo from "@/components/chatlist/FriendChatInfo";
 import GroupChatInfo from "@/components/chatlist/GroupChatInfo";
 import MessageChat from "@/components/message/MessageChat";
 import VText from "@/components/text/Text";
-import { mapGetters,mapState } from "vuex";
+import { mapGetters, mapState } from "vuex";
 export default {
   components: {
     SearchList,

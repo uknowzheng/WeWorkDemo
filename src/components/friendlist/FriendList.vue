@@ -57,7 +57,7 @@
           @click="selectFriend(item.username)"
         >
           <img class="avatar" width="36" height="36" :src="item.avatar" />
-          <div class="remark">{{ item.remark }}</div>
+          <div class="remark">{{ item.remark || item.nickname }}</div>
         </div>
       </li>
     </ul>
@@ -70,6 +70,9 @@ import { mapState, mapActions, mapGetters } from "vuex";
 export default {
   components: {
     Badge,
+  },
+  async mounted() {
+    await this.getFriendList();
   },
   computed: {
     ...mapState({
@@ -84,7 +87,10 @@ export default {
     }),
   },
   methods: {
-    ...mapActions({ selectFriend: "friend/selectFriend" }),
+    ...mapActions({
+      selectFriend: "friend/selectFriend",
+      getFriendList: "friend/getFriendList",
+    }),
   },
 };
 </script>
