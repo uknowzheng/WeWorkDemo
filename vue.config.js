@@ -14,6 +14,16 @@ module.exports = {
   publicPath: BASE_URL,
   devServer: {
     port: 8000, // 端口
+    proxy: {
+      // 在这里配置代理转发的规则
+      "/banana": {
+        target: config.devHost,
+        changeOrigin: true,
+        // pathRewrite: {
+        //   "^/banana": "",
+        // },
+      },
+    },
   },
   outputDir: "prod/dist",
   // 如果你不需要使用eslint，把lintOnSave设为false即可

@@ -1,11 +1,6 @@
-import {
-  getAvatar
-} from '@/libs/tools'
-import {
-  removeToken,
-  setToken,
-  getToken
-} from '@/libs/util'
+import { getAvatar } from "@/libs/tools";
+import { removeToken, setToken, getToken } from "@/libs/util";
+import { login, logout } from "@/api/user";
 const state = {
   token: getToken(),
   // 当前登录用户
@@ -14,78 +9,70 @@ const state = {
     sex: 1,
     wxid: "",
     area: "广州",
-    nickname: '房东的Tom',
+    nickname: "房东的Tom",
     avatar: null,
     username: "",
   },
-}
+};
 const mutations = {
-  saveToken(state, {
-    token,
-    auto
-  }) {
+  saveToken(state, { token, auto }) {
     if (token == null) {
       removeToken();
     } else {
-      state.token = token
-      setToken(token, auto)
+      state.token = token;
+      setToken(token, auto);
     }
   },
   setUserInfo(state, info) {
     state.info = info;
-  }
-}
+  },
+};
 
 const actions = {
-  setUserInfo: ({
-    commit
-  }, info) => commit('setUserInfo', info),
+  setUserInfo: ({ commit }, info) => commit("setUserInfo", info),
   // 登录
-  handleLogin({
-    state,
-    commit
-  }, {
-    username,
-    nickname,
-    password,
-    auto
-  }) {
-    username = username.trim();
-    return new Promise((resolve, reject) => {
-      let token = "1212121";
-      commit('saveToken', {
-        token,
-        auto
-      })
-      state.info.signature = "走别人的路，让别人无路可走";
-      state.info.sex = 1;
-      state.info.wxid = "12345";
-      state.info.area = "奥林帕斯山";
-      state.info.nickname = nickname;
-      state.info.avatar = getAvatar(nickname);
-      state.info.username = username;
-      resolve(state.info);
-    })
+  async handleLogin({ state, commit }, { username, password, auto }) {
+    // {
+    //   headImg="",
+    //   phone="",
+    //   token="",
+    //   username="",
+    // }
+    const userInfo = await login({
+      username,
+      password,
+    });
+    await commit("saveToken", {
+      token: userInfo.token,
+      auto,
+    });
+
+    state.info.signature = "";
+    state.info.sex = 1;
+    state.info.wxid = userInfo.phone;
+    state.info.area = "安道尔";
+    state.info.nickname = userInfo.username;
+    state.info.avatar = userInfo.headImg;
+    state.info.username = userInfo.username;
+
+    return state.info;
   },
   // 退出登录
-  handleLogout({
-    commit
-  }) {
-    commit('saveToken', {
+  handleLogout({ commit }) {
+    commit("saveToken", {
       token: null,
-      auto: true
-    })
-  }
-}
+      auto: true,
+    });
+  },
+};
 const getters = {
   getUser(state, mutations, rootState) {
-    if (state.info.avatar == null || state.info.avatar === '') {
+    if (state.info.avatar == null || state.info.avatar === "") {
       state.info.avatar = getAvatar(state.info.nickname);
     }
     return state.info;
-  }
-}
-
+  },
+};
 
 export default {
   namespaced: true,
@@ -95,4 +82,4 @@ export default {
   mutations,
   actions,
   getters,
-}
+};

@@ -5,52 +5,32 @@
       <img id="headMenu" :src="user.avatar" class="avatar" />
     </div>
     <div class="loginInfo">
-      <input class="account" v-model="form.nickname" placeholder="昵称" />
       <input
         class="account"
         maxlength="14"
         oninput="value=value.replace(/[^\w\.\s\/]/ig,'')"
         v-model="form.username"
-        placeholder="账号"
+        placeholder="请输入账号"
       />
-      <!-- <input class="password" type="password" v-model="form.password" /> -->
+      <input
+        class="password"
+        type="password"
+        v-model="form.password"
+        placeholder="请输入密码"
+      />
     </div>
     <div class="loginBotton" @click="login">
       <span>登录</span>
     </div>
-    <!-- <div class="select">
-      <CheckBox
-        @change="remember"
-        type="checkbox"
-        :checked="rememberPass"
-        :width="12"
-        :height="12"
-        :fontSize="8"
-        :label="'记住密码'"
-      />
-    </div> -->
   </div>
 </template>
 
 <script>
-import CheckBox from "@/components/other/input/CheckBox";
 import { mapActions } from "vuex";
 export default {
-  components: {
-    CheckBox,
-  },
   data() {
     return {
-      rememberPass:
-        localStorage.getItem("rememberPass") === null ||
-        localStorage.getItem("rememberPass") === ""
-          ? false
-          : true,
       form: {
-        nickname:
-          localStorage.getItem("nickname") === null
-            ? ""
-            : localStorage.getItem("nickname"),
         username:
           localStorage.getItem("username") === null
             ? ""
@@ -76,31 +56,11 @@ export default {
       listFriendInfo: "user/listFriendInfo",
       setUserInfo: "user/setUserInfo",
     }),
-    remember(value) {
-      if (value) {
-        localStorage.setItem("rememberPass", value);
-        localStorage.setItem("password", this.form.password);
-      } else {
-        localStorage.setItem("rememberPass", "");
-        localStorage.removeItem("password");
-      }
-    },
-    login() {
+    async login() {
       let username = this.form.username;
       let password = this.form.password;
-      let nickname = this.form.nickname;
-      if (
-        username === "" ||
-        username === null ||
-        nickname === "" ||
-        nickname === null
-      ) {
-        this.$message({
-          content: "用户名和昵称不能为空",
-          time: 2500,
-          type: "warning",
-          hasClose: true,
-        });
+      if (username === "" || username === null) {
+        this.$message.error("用户名和昵称不能为空");
         return;
       }
       let saveUsername = localStorage.getItem("username", username);
@@ -108,14 +68,12 @@ export default {
         localStorage.removeItem("vue-wechat");
       }
       localStorage.setItem("username", username);
-      localStorage.setItem("nickname", this.form.nickname);
       let auto = this.form.auto;
-      this.handleLogin({ username, nickname, password, auto })
-        .then((res) => {
-          this.setUserInfo(res);
-          this.$router.push({ path: "/chat" });
-        })
-        .finally(() => {});
+      let res = await this.handleLogin({ username, password, auto });
+      if (res) {
+        this.setUserInfo(res);
+        this.$router.push({ path: "/chat" });
+      }
     },
   },
 };

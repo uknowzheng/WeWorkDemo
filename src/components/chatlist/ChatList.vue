@@ -182,12 +182,7 @@ export default {
     },
     closeChat() {
       if (this.currentChat.chatId === "wx001") {
-        this.$message({
-          content: "机器人不能隐藏哦！",
-          time: 2500,
-          type: "warning",
-          hasClose: true,
-        });
+        this.$message.warning("机器人不能隐藏哦！");
         return;
       }
       if (this.$store.state.chat.chatlist.length < 2) {
@@ -202,12 +197,7 @@ export default {
     },
     deleteChat() {
       if (this.currentChat.chatId === "99") {
-        this.$message({
-          content: "机器人不能删除哦！",
-          time: 2500,
-          type: "warning",
-          hasClose: true,
-        });
+        this.$message.warning("机器人不能删除哦！");
         return;
       }
       this.deleteChatByChatId(this.currentChat.chatId);

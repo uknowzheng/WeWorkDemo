@@ -81,12 +81,7 @@ export default {
     //申请浏览器通知权限，具体参见链接 https://developer.mozilla.org/en-US/docs/Web/API/Notification/Notification
     allowNotification() {
       if (!("Notification" in window)) {
-        this.$message({
-          content: "浏览器不支持消息通知",
-          time: 2500,
-          type: "warning",
-          hasClose: true,
-        });
+        this.$message.error("浏览器不支持消息通知");
         return;
       }
       const permission = Notification.permission;
@@ -95,12 +90,7 @@ export default {
       }
       Notification.requestPermission((permission) => {
         if (permission !== "granted") {
-          this.$message({
-            content: "无法提示新消息！",
-            time: 2500,
-            type: "warning",
-            hasClose: true,
-          });
+          this.$message.error("无法提示新消息！");
         }
       });
     },

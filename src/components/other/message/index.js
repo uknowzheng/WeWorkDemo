@@ -1,31 +1,30 @@
-import Vue from 'vue'
-import Message from './Message.vue'
+import Vue from "vue";
+import Message from "./Message.vue";
 
-const messageBox = Vue.extend(Message)
+const messageBox = Vue.extend(Message);
 
 Message.install = function (options, type) {
   if (options === undefined || options === null) {
     options = {
-      content: ''
-    }
-  } else if (typeof options === 'string' || typeof options === 'number') {
+      content: "",
+    };
+  } else if (typeof options === "string") {
     options = {
-      content: options
-    }
+      content: options,
+    };
     if (type != undefined && options != null) {
       options.type = type;
     }
   }
-
   let instance = new messageBox({
-    data: options
-  }).$mount()
+    data: options,
+  }).$mount();
 
-  document.body.appendChild(instance.$el)
+  document.body.appendChild(instance.$el);
 
   Vue.nextTick(() => {
-    instance.visible = true
-  })
-}
+    instance.visible = true;
+  });
+};
 
-export default Message
+export default Message;

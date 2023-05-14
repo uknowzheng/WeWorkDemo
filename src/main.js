@@ -12,9 +12,6 @@ import "@/assets/icons/iconfont.css";
 import CusConfirm from "@/components/other/confirm/CusConfirm";
 Vue.prototype.$confirm = CusConfirm.install;
 
-import Message from "@/components/other/message";
-Vue.prototype.$message = Message.install;
-
 /**
  * @description 全局注册应用配置
  */
