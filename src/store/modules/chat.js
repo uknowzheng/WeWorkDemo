@@ -175,7 +175,7 @@ const actions = {
   selectSession: ({ commit }, value) => commit("selectSession", value),
   initData: async ({ commit }) => {
     // let data = [];
-    // TODO：
+    // TODO: 这里先是获取聊天室列表，后续要调用messageHistory加载每个聊天窗口的最近一次的历史信息列表，当用户进入窗口后，要遍历所有消息改成已读setRead
     // const chatList = await dialogBox();
     // data = chatList;
     // //   [
