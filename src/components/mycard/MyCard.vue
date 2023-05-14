@@ -30,14 +30,23 @@
       </router-link>
     </div>
     <footer>
-      <i class="icon iconfont icon-san"></i>
+      <el-dropdown @command="handleCommand">
+        <span>
+          <i class="icon iconfont icon-san" slot="reference"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item icon="el-icon-exit" command="exit"
+            ><span>退出登陆</span></el-dropdown-item
+          >
+        </el-dropdown-menu>
+      </el-dropdown>
     </footer>
   </div>
 </template>
 
 <script>
 import Badge from "@/components/other/Badge";
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 export default {
   components: {
     Badge,
@@ -53,6 +62,18 @@ export default {
     return {};
   },
   methods: {
+    ...mapActions({
+      handleLogout: "user/handleLogout",
+    }),
+    async handleCommand(command) {
+      if (command === "exit") {
+        await this.logout();
+      }
+    },
+    async logout() {
+      await this.handleLogout();
+      await this.$router.push("/login");
+    },
     clearSearch() {
       this.$store.dispatch("system/search", "");
     },

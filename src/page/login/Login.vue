@@ -72,7 +72,7 @@ export default {
       let res = await this.handleLogin({ username, password, auto });
       if (res) {
         this.setUserInfo(res);
-        this.$router.push({ path: "/chat" });
+        this.$router.push("/chat");
       }
     },
   },

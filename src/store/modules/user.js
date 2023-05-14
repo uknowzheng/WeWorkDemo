@@ -31,17 +31,20 @@ const mutations = {
 const actions = {
   setUserInfo: ({ commit }, info) => commit("setUserInfo", info),
   // 登录
-  async handleLogin({ state, commit }, { username, password, auto }) {
-    // {
-    //   headImg="",
-    //   phone="",
-    //   token="",
-    //   username="",
-    // }
-    const userInfo = await login({
-      username,
-      password,
-    });
+  handleLogin: async ({ state, commit }, { username, password, auto }) => {
+    const userInfo = {
+      headImg:
+        "//hbimg.b0.upaiyun.com/2f9bdf69b48ef2bada52f7c33ed1713b9ef4c40f50f2-Llb30l_fw658",
+      phone: "123123123",
+      token: "1234",
+      username: "hahaha",
+    };
+    //TODO:
+    // const userInfo = await login({
+    //   username,
+    //   password,
+    // });
+
     await commit("saveToken", {
       token: userInfo.token,
       auto,
@@ -58,8 +61,10 @@ const actions = {
     return state.info;
   },
   // 退出登录
-  handleLogout({ commit }) {
-    commit("saveToken", {
+  handleLogout: async ({ commit }) => {
+    //TODO:
+    // await logout();
+    await commit("saveToken", {
       token: null,
       auto: true,
     });
