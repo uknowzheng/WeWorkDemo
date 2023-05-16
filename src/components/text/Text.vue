@@ -24,6 +24,10 @@
           <input type="file" @change="selectFile($event)" ref="selectFile" />
         </a>
       </span>
+      <span class="operation-icon">
+        <a href="javascript:;" class="icon el-icon-time"></a>
+      </span>
+
       <transition name="showbox">
         <div class="emojiBox" v-show="showEmoji">
           <li v-for="item in emojis" :key="item.id">
