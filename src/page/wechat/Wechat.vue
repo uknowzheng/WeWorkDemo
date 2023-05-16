@@ -27,7 +27,7 @@
 import HeadMenu from "@/components/other/menu/HeadMenu";
 import MyCard from "@/components/mycard/MyCard";
 import { initInfo, initSystemInfo } from "@/page/wechat/init.js";
-import { getToken } from "@/libs/util";
+import { getCookie, TOKEN_KEY } from "@/libs/util";
 import { mapActions, mapState } from "vuex";
 export default {
   components: {
@@ -54,7 +54,7 @@ export default {
     this.allowNotification();
   },
   beforeMount() {
-    if (!getToken()) {
+    if (!getCookie(TOKEN_KEY)) {
       return;
     }
   },

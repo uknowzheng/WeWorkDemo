@@ -1,8 +1,8 @@
 import { getAvatar } from "@/libs/tools";
-import { removeToken, setToken, getToken } from "@/libs/util";
+import { setCookie, getCookie, TOKEN_KEY } from "@/libs/util";
 import { login, logout } from "@/api/user";
 const state = {
-  token: getToken(),
+  token: getCookie(TOKEN_KEY),
   // 当前登录用户
   info: {
     signature: "",
@@ -15,12 +15,12 @@ const state = {
   },
 };
 const mutations = {
-  saveToken(state, { token, auto }) {
+  saveToken(state, { token }) {
     if (token == null) {
-      removeToken();
+      return;
     } else {
       state.token = token;
-      setToken(token, auto);
+      setCookie(TOKEN_KEY, token, 1);
     }
   },
   setUserInfo(state, info) {
@@ -31,7 +31,7 @@ const mutations = {
 const actions = {
   setUserInfo: ({ commit }, info) => commit("setUserInfo", info),
   // 登录
-  handleLogin: async ({ state, commit }, { username, password, auto }) => {
+  handleLogin: async ({ state, commit }, { username, password }) => {
     const userInfo = {
       headImg:
         "//hbimg.b0.upaiyun.com/2f9bdf69b48ef2bada52f7c33ed1713b9ef4c40f50f2-Llb30l_fw658",
@@ -47,7 +47,6 @@ const actions = {
 
     await commit("saveToken", {
       token: userInfo.token,
-      auto,
     });
 
     state.info.signature = "";
@@ -66,7 +65,6 @@ const actions = {
     // await logout();
     await commit("saveToken", {
       token: null,
-      auto: true,
     });
   },
 };

@@ -1,26 +1,5 @@
 export const TOKEN_KEY = "token";
 
-export const removeToken = () => {
-  localStorage.removeItem(TOKEN_KEY);
-};
-
-export const setToken = (token, auto) => {
-  if (auto) {
-    localStorage.setItem(TOKEN_KEY, token);
-  } else {
-    localStorage.setItem(TOKEN_KEY, token);
-  }
-};
-
-export const getToken = () => {
-  const token = localStorage.getItem(TOKEN_KEY);
-  if (token && token !== "undefined") {
-    return token;
-  } else {
-    return false;
-  }
-};
-
 export const hasChild = (item) => {
   return item.children && item.children.length !== 0;
 };
@@ -226,18 +205,30 @@ export const readUserAgent = (ua) => {
   return data;
 };
 
-export function getTokenFromCookie() {
-  const cookieString = document.cookie; // 获取当前页面的所有cookie
-  const cookies = cookieString.split(";"); // 将cookie字符串分割成单个cookie项
+export function setCookie(name, value, days) {
+  var expires = "";
+  if (days) {
+    var date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
 
-  // 遍历每个cookie项，找到名为"token"的cookie
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i].trim(); // 去除空格
-    // 判断cookie是否以"token"开头
-    if (cookie.startsWith("token=")) {
-      return cookie.substring(6); // 返回去除前缀的token值
+export function getCookie(name) {
+  var cookieName = name + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var cookieArray = decodedCookie.split(";");
+
+  for (var i = 0; i < cookieArray.length; i++) {
+    var cookie = cookieArray[i];
+    while (cookie.charAt(0) === " ") {
+      cookie = cookie.substring(1);
+    }
+    if (cookie.indexOf(cookieName) === 0) {
+      return cookie.substring(cookieName.length, cookie.length);
     }
   }
 
-  return null; // 如果没有找到token cookie，则返回null或者适合的默认值
+  return null;
 }

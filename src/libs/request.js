@@ -1,7 +1,7 @@
 import axios from "axios";
 import Vue from "vue";
 
-import { getTokenFromCookie } from "./util";
+import { getCookie, TOKEN_KEY } from "./util";
 
 // 创建一个自定义的axios实例
 const instance = axios.create({
@@ -12,7 +12,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     // 从cookie获取token
-    const token = getTokenFromCookie();
+    const token = getCookie(TOKEN_KEY);
     // 添加请求头部Bearer
     if (token) {
       config.headers["Authorization"] = "Bearer " + token;

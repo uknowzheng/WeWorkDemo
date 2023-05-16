@@ -1,6 +1,6 @@
 import { post } from "../libs/request";
 import CustomSocketIO from "../libs/websocket";
-import { getTokenFromCookie } from "../libs/util";
+import { getCookie, TOKEN_KEY } from "../libs/util";
 
 export function dialogBox() {
   return post("/banana/im/chat/dialogBox");
@@ -41,7 +41,7 @@ export function setRead(
 }
 
 export function registerWebSocket() {
-  const token = getTokenFromCookie();
+  const token = getCookie(TOKEN_KEY);
   const socket = new CustomSocketIO(`/banana/websocket/msg/${token}`);
 
   // 建立连接

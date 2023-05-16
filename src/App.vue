@@ -37,17 +37,17 @@ export default {
       },
     };
   },
-  watch: {
-    $route: {
-      handler: function (route) {
-        if (route.path === "/login") {
-          this.showRegister = true;
-        } else {
-          this.showRegister = false;
-        }
-      },
-    },
-  },
+  // watch: {
+  //   $route: {
+  //     handler: function (route) {
+  //       if (route.path === "/login") {
+  //         this.showRegister = true;
+  //       } else {
+  //         this.showRegister = false;
+  //       }
+  //     },
+  //   },
+  // },
   methods: {
     ...mapActions({
       handleLogout: "user/handleLogout",
@@ -91,7 +91,7 @@ export default {
   },
 };
 </script>
-<style lang="stylus" >
+<style lang="stylus">
 #app {
   height: 100%;
 }
