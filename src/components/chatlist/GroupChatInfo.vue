@@ -160,7 +160,7 @@ export default {
         if (friend != null) {
           user.groupNickname = friend.remark;
         }
-        return user;
+        return user || {};
       };
     },
   },
@@ -170,6 +170,7 @@ export default {
       deleteChatByChatId: "chat/deleteChatByChatId",
     }),
     openMenu(e, item) {
+      debugger;
       let info = {
         clientX: e.clientX,
         clientY: e.clientY,

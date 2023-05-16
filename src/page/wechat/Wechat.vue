@@ -1,21 +1,9 @@
 <template>
   <div id="wechat">
-    <div class="network-bar" v-if="!network">
-      <p>
-        <i class="icon iconfont icon-warn"></i
-        >连接失败，请检查你的网络或刷新页面
-      </p>
-    </div>
     <div class="sidebar">
-      <MyCard></MyCard>
+      <SideBar></SideBar>
     </div>
     <div class="main">
-      <div class="systemBottom">
-        <i class="icon iconfont icon-window-ding"></i>
-        <i class="icon iconfont icon-window-min"></i>
-        <i class="icon iconfont icon-window-max"></i>
-        <i @click="exit" class="icon iconfont icon-close close"></i>
-      </div>
       <router-view></router-view>
     </div>
     <HeadMenu class="right-menu" id="friendHeadMenu" :refId="'friendHeadMenu'">
@@ -25,13 +13,11 @@
 
 <script>
 import HeadMenu from "@/components/other/menu/HeadMenu";
-import MyCard from "@/components/mycard/MyCard";
-import { initInfo, initSystemInfo } from "@/page/wechat/init.js";
+import SideBar from "@/components/sidebar/SideBar";
 import { getCookie, TOKEN_KEY } from "@/libs/util";
-import { mapActions, mapState } from "vuex";
 export default {
   components: {
-    MyCard,
+    SideBar,
     HeadMenu,
   },
   data() {
@@ -42,14 +28,9 @@ export default {
       },
     };
   },
-  computed: {
-    ...mapState({
-      network: (state) => state.system.network,
-    }),
-  },
   created() {
-    initInfo();
-    initSystemInfo();
+    this.initFriendList();
+    this.initGroupChatList();
     // 允许浏览器通知
     this.allowNotification();
   },
@@ -75,9 +56,17 @@ export default {
     };
   },
   methods: {
-    ...mapActions({
-      handleLogout: "user/handleLogout",
-    }),
+    initFriendList() {
+      // listFriendInfo()
+      //     .then((res) => {
+      //         if (res.code == 0) {
+      //             store.commit("friend/addFriendList", res.data);
+      //         }
+      //     }).catch(err => {
+      //         console.log(err);
+      //     })
+    },
+    initGroupChatList() {},
     //申请浏览器通知权限，具体参见链接 https://developer.mozilla.org/en-US/docs/Web/API/Notification/Notification
     allowNotification() {
       if (!("Notification" in window)) {
@@ -100,12 +89,6 @@ export default {
       app.style.left = (width - app.offsetWidth) / 2 + "px";
       app.style.top = (height - app.offsetHeight) / 2 + "px";
     },
-    exit() {
-      this.handleLogout();
-      this.$router.push({
-        path: "/login",
-      });
-    },
   },
 };
 </script>
@@ -122,31 +105,6 @@ export default {
   height: 630px;
   background-color: #fff;
 
-  .network-bar {
-    position: absolute;
-    height: 34px;
-    width: 320px;
-    background-color: #CC5353;
-    top: -38px;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-    text-align: center;
-    border-radius: 3px;
-
-    p {
-      font-size: 13px;
-      font-weight: 100;
-      color: #fff;
-      line-height: 34px;
-
-      i {
-        font-size: 12px;
-        margin-right: 10px;
-      }
-    }
-  }
-
   .sidebar {
     width: 55px;
     height: 630px;
@@ -157,31 +115,6 @@ export default {
     flex: 1;
     height: 630px;
     background: #F5F5F5;
-  }
-
-  .systemBottom {
-    position: absolute;
-    right: 0px;
-
-    i {
-      font-size: 6px !important;
-      padding: 8px 10px;
-      line-height: 30px;
-      cursor: pointer;
-      color: #7F7F7F;
-
-      &:hover {
-        background-color: #E5E5E5;
-        color: #3F3F3F;
-      }
-    }
-
-    .close {
-      &:hover {
-        background-color: #E64340;
-        color: #fff;
-      }
-    }
   }
 }
 </style>
