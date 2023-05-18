@@ -1,19 +1,21 @@
 <!-- 好友信息 -->
 <template>
-  <div class="Info-wrapper">
+  <div class="Info-wrapper" v-if="selectedFriend">
     <div class="info-head" v-drag></div>
     <div class="friendInfo">
       <div class="esInfo">
         <div class="left">
           <div class="people">
-            <div class="nickname">{{ selectedFriend.nickname }}</div>
-            <div
-              :class="[
-                selectedFriend.sex === 1 ? 'gender-male' : 'gender-female',
-              ]"
-            ></div>
+            <div class="nickname">{{ selectedFriend.contactName }}</div>
+            <i
+              style="margin-left: 5px"
+              :class="
+                selectedFriend.isOnline === 'online'
+                  ? 'el-icon-success'
+                  : 'el-icon-error'
+              "
+            ></i>
           </div>
-          <div class="signature">{{ selectedFriend.signature }}</div>
         </div>
         <div class="right">
           <img
@@ -26,18 +28,11 @@
       </div>
       <div class="detInfo">
         <div class="remark">
-          <span>备&emsp;注</span>{{ selectedFriend.remark }}
+          <span>备&emsp;注</span>这个人很懒！什么也没备注什么！
         </div>
-        <div
-          class="area"
-          v-if="selectedFriend.area != null && selectedFriend.area !== ''"
-        >
-          <span>地&emsp;区</span>{{ selectedFriend.area }}
-        </div>
-        <div class="origin">
-          <span>来&emsp;源</span>{{ selectedFriend.origin }}
-        </div>
-        <div class="wxid"><span>微信号</span>{{ selectedFriend.wxid }}</div>
+        <div class="area"><span>地&emsp;区</span>安道尔</div>
+        <div class="origin"><span>来&emsp;源</span>号码搜索</div>
+        <div class="wxid"><span>微信号</span>-</div>
       </div>
       <div class="send" @click="send">
         <span>发消息</span>

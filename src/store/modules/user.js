@@ -1,75 +1,67 @@
 import { getAvatar } from "@/libs/tools";
-import { setCookie, getCookie, TOKEN_KEY } from "@/libs/util";
+import { setCookie, getCookie, TOKEN_KEY, USER_INFO_KEY } from "@/libs/util";
 import { login, logout } from "@/api/user";
 const state = {
   token: getCookie(TOKEN_KEY),
   // 当前登录用户
-  info: {
-    signature: "",
-    sex: 1,
-    wxid: "",
-    area: "广州",
-    nickname: "房东的Tom",
-    avatar: null,
-    username: "",
-  },
+  info: {},
 };
 const mutations = {
   saveToken(state, { token }) {
     if (token == null) {
+      setCookie(TOKEN_KEY, null);
       return;
     } else {
       state.token = token;
-      setCookie(TOKEN_KEY, token, 1);
+      setCookie(TOKEN_KEY, token, 0.4);
     }
   },
   setUserInfo(state, info) {
+    setCookie(USER_INFO_KEY, JSON.stringify(info));
     state.info = info;
+  },
+  initUserInfo(state) {
+    const userInfoStr = getCookie(USER_INFO_KEY);
+    const userInfo = JSON.parse(userInfoStr);
+    state.info = userInfo;
   },
 };
 
 const actions = {
-  setUserInfo: ({ commit }, info) => commit("setUserInfo", info),
   // 登录
   handleLogin: async ({ state, commit }, { username, password }) => {
-    const userInfo = {
-      headImg:
-        "//hbimg.b0.upaiyun.com/2f9bdf69b48ef2bada52f7c33ed1713b9ef4c40f50f2-Llb30l_fw658",
-      phone: "123123123",
-      token: "1234",
-      username: "hahaha",
-    };
-    //TODO:
-    // const userInfo = await login({
-    //   username,
-    //   password,
-    // });
+    const userInfo = await login({
+      username,
+      password,
+    });
 
     await commit("saveToken", {
       token: userInfo.token,
     });
 
-    state.info.signature = "";
-    state.info.sex = 1;
-    state.info.wxid = userInfo.phone;
-    state.info.area = "安道尔";
-    state.info.nickname = userInfo.username;
-    state.info.avatar = userInfo.headImg;
-    state.info.username = userInfo.username;
-
+    const info = {
+      signature: "",
+      sex: "",
+      wxid: userInfo.phone,
+      area: "安道尔",
+      nickname: userInfo.username,
+      avatar: userInfo.headImg,
+      username: userInfo.username,
+    };
+    commit("setUserInfo", info);
     return state.info;
   },
   // 退出登录
   handleLogout: async ({ commit }) => {
-    //TODO:
-    // await logout();
+    await logout();
     await commit("saveToken", {
       token: null,
     });
+    await commit("setUserInfo", {});
   },
 };
 const getters = {
-  getUser(state, mutations, rootState) {
+  getUser(state) {
     if (state.info.avatar == null || state.info.avatar === "") {
       state.info.avatar = getAvatar(state.info.nickname);
     }

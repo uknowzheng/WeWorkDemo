@@ -12,6 +12,10 @@
       "description": "Friends Controller"
     },
     {
+      "name": "文件模块",
+      "description": "File Controller"
+    },
+    {
       "name": "登录模块",
       "description": "Login Controller"
     },
@@ -270,6 +274,49 @@
         }
       }
     },
+    "/banana/im/file/upload": {
+      "post": {
+        "tags": [
+          "文件模块"
+        ],
+        "summary": "文件上传",
+        "operationId": "uploadFileUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "access_token",
+            "description": "鉴权信息以\"Bearer \"开头，取自登录返回的token字段。",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK，返回的data为文件的url",
+            "schema": {
+              "$ref": "#/definitions/Result«string»"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/banana/im/friends/getContacts": {
       "post": {
         "tags": [
@@ -492,6 +539,10 @@
         "contactName": {
           "type": "string",
           "description": "显示名字"
+        },
+        "onlineStatus": {
+          "type": "string",
+          "description": "在线状态 online:在线 offline:离线"
         }
       },
       "title": "ContactInfoVo",
@@ -849,6 +900,36 @@
         }
       },
       "title": "Result«boolean»"
+    },
+    "Result«string»": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "返回码，0：成功 -1：失败"
+        },
+        "data": {
+          "type": "string",
+          "description": "返回内容对象"
+        },
+        "errMsgs": {
+          "description": "自定义错误提醒，逗号分隔",
+          "$ref": "#/definitions/StringBuffer"
+        },
+        "msg": {
+          "type": "string",
+          "description": "返回码说明"
+        },
+        "requestId": {
+          "type": "string",
+          "description": "请求ID"
+        },
+        "time": {
+          "type": "string",
+          "description": "时间戳"
+        }
+      },
+      "title": "Result«string»"
     },
     "SendChatMessageReqDto": {
       "type": "object",

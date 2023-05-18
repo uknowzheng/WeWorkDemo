@@ -15,7 +15,7 @@ instance.interceptors.request.use(
     const token = getCookie(TOKEN_KEY);
     // 添加请求头部Bearer
     if (token) {
-      config.headers["Authorization"] = "Bearer " + token;
+      config.headers["access_token"] = "Bearer " + token;
     }
     return config;
   },
@@ -44,11 +44,13 @@ function request(method, url, data) {
   return instance(config)
     .then((response) => {
       // 对响应数据做一些处理，例如解析数据
-      if (!~response.data.code) {
-        Vue.$message.error(response.data.msg);
+      const { code, data, msg } = response.data;
+      const reqCode = parseInt(code);
+      if (!~reqCode) {
+        Vue.prototype.$message.error(msg);
         return null;
       }
-      return response.data;
+      return data;
     })
     .catch((error) => {
       // 处理错误

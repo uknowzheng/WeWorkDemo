@@ -1,4 +1,5 @@
 export const TOKEN_KEY = "token";
+export const USER_INFO_KEY = "user_info";
 
 export const hasChild = (item) => {
   return item.children && item.children.length !== 0;

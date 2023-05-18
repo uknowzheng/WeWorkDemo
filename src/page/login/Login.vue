@@ -73,7 +73,6 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      setTimeout(() => {}, 2000);
       try {
         let res = await this.handleLogin({ username, password });
         if (res) {

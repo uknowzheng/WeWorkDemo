@@ -49,9 +49,6 @@ export default {
   //   },
   // },
   methods: {
-    ...mapActions({
-      handleLogout: "user/handleLogout",
-    }),
     //阻止F5刷新
     stopF5Refresh() {
       document.onkeydown = function (e) {
@@ -68,16 +65,7 @@ export default {
       };
     },
     //浏览器刷新事件
-    beforeunloadHandler(e) {
-      this.handleLogout();
-      if (
-        JSON.parse(localStorage.getItem("havePlay")) &&
-        JSON.parse(localStorage.getItem("havePlay")).currentTime ==
-          this.currentTime
-      ) {
-        window.localStorage.removeItem("havePlay");
-      }
-    },
+    beforeunloadHandler(e) {},
     // register() {
     //   switch (process.env.NODE_ENV) {
     //     case "development":

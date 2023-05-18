@@ -15,6 +15,7 @@
 import HeadMenu from "@/components/other/menu/HeadMenu";
 import SideBar from "@/components/sidebar/SideBar";
 import { getCookie, TOKEN_KEY } from "@/libs/util";
+import { mapActions, mapMutations } from "vuex";
 export default {
   components: {
     SideBar,
@@ -29,6 +30,7 @@ export default {
     };
   },
   created() {
+    this.initUserInfo();
     this.initFriendList();
     this.initGroupChatList();
     // 允许浏览器通知
@@ -56,16 +58,12 @@ export default {
     };
   },
   methods: {
-    initFriendList() {
-      // listFriendInfo()
-      //     .then((res) => {
-      //         if (res.code == 0) {
-      //             store.commit("friend/addFriendList", res.data);
-      //         }
-      //     }).catch(err => {
-      //         console.log(err);
-      //     })
-    },
+    ...mapMutations({
+      initUserInfo: "user/initUserInfo",
+    }),
+    ...mapActions({
+      initFriendList: "friend/getFriendList",
+    }),
     initGroupChatList() {},
     //申请浏览器通知权限，具体参见链接 https://developer.mozilla.org/en-US/docs/Web/API/Notification/Notification
     allowNotification() {

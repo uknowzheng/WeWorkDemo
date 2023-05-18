@@ -1,22 +1,16 @@
 <!-- 好友信息 -->
 <template>
   <div class="Info">
-    <FriendInfo v-if="selectedFriend.wxid!=='1' && selectedFriend.wxid!=='2'"></FriendInfo>
-    <GroupInfo v-if="selectedFriend.wxid==='2'"></GroupInfo>
-    <NewFriendInfo v-if="selectedFriend.wxid==='1'"></NewFriendInfo>
+    <FriendInfo></FriendInfo>
   </div>
 </template>
 
 <script>
 import FriendInfo from "./FriendInfo";
-import GroupInfo from "./GroupInfo";
-import NewFriendInfo from "./NewFriendInfo";
 import { mapGetters } from "vuex";
 export default {
   components: {
     FriendInfo,
-    GroupInfo,
-    NewFriendInfo,
   },
   computed: {
     ...mapGetters({
@@ -28,4 +22,3 @@ export default {
 </script>
 
 <style lang="stylus" scoped></style>
-

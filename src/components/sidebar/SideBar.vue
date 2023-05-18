@@ -20,13 +20,6 @@
         ></Badge>
       </router-link>
       <router-link to="/friend" class="icon iconfont icon-friend">
-        <Badge
-          v-if="getNewFriendNums > 0"
-          :count="getNewFriendNums"
-          :overflowCount="99"
-          :width="16"
-          :height="16"
-        ></Badge>
       </router-link>
     </div>
     <footer>
@@ -53,7 +46,6 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getNewFriendNums: "friend/getNewFriendNums",
       getTotalNewMsgs: "chat/getTotalNewMsgs",
       getUser: "user/getUser",
     }),
