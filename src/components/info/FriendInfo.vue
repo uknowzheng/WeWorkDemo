@@ -55,7 +55,6 @@ export default {
     // 添加该好友的对话 并置顶
     send() {
       let friend = this.selectedFriend;
-      debugger;
       let msg = this.getChatByChatId(friend.contactId);
       if (!msg) {
         this.$store.dispatch("friend/selectFriend", friend.contactId);

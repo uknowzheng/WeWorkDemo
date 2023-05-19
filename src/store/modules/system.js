@@ -521,7 +521,7 @@ const actions = {
 const getters = {
   getHeadMenuInfo(state, params, rootState) {
     let friend = rootState.friend.friendlist.find(
-      (friend) => friend.username === state.headMenu.username
+      (friend) => friend.constactId === state.headMenu.wxid
     );
     return friend;
   },

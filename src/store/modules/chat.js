@@ -1,6 +1,7 @@
 import { timeDifference, base64toFile } from "@/libs/tools";
 
-import { sendMessage, dialogBox } from "@/api/chat";
+import { sendMessage, messageHistory, dialogBox } from "@/api/chat";
+
 const now = new Date();
 // namespaced: true 的方式使其成为带命名空间的模块。保证在变量名一样的时候，添加一个父级名拼接。
 // 例： SET_NAME => user/SET_NAME
@@ -50,47 +51,21 @@ const mutations = {
     }
   },
   // 发送信息
-  sendMessage(state, { msg, rootState }) {
+  sendMessage(state, { message }) {
     let result = state.chatlist.find(
       (session) => session.chatId === state.selectChatId
     );
-    let now = new Date();
-    // 获取最后一条消息时间
-    let interval = timeDifference(new Date(result.lastMsgTime), now);
-    let showTime = false;
-    if (interval > 3) {
-      showTime = true;
-    }
-    result.lastMsgTime = new Date();
-
-    result.messages.push({
-      content: msg.content,
-      date: now,
-      type: msg.type,
-      username: rootState.user.info.username,
-      showTime: showTime,
-    });
-    if (result.chatId === "99") {
-      setTimeout(() => {
-        result.messages.push({
-          content: "由于资金不足，机器人已经跑路!",
-          date: now,
-          username: "001",
-          type: 1,
-          showTime: false,
-        });
-      }, 200);
-    } else {
-      if (msg.type == 2) {
-        let file = base64toFile(msg.content.src, "file");
-        // 上传图片
-        return;
-      }
-      if (msg.type == 3) {
-        // 上传文件
-        return;
-      }
-    }
+    result.lastMsgTime = message.msgTime;
+    result.messages.push(message);
+    // if (msg.type == 2) {
+    //   let file = base64toFile(msg.content.src, "file");
+    //   // 上传图片
+    //   return;
+    // }
+    // if (msg.type == 3) {
+    //   // 上传文件
+    //   return;
+    // }
   },
   async ["receiveMessage"](state, { commit, msg, rootGetters }) {
     let result = state.chatlist.find(
@@ -186,48 +161,97 @@ const actions = {
         avatar: item.avatar, //头像
         noReadNum: item.noReadNum,
         lastMsgTime: new Date(item.msgTime),
-        messages: [
-          {
+        messages: [],
+      };
+    });
+
+    data.forEach(async (item) => {
+      const messageList = await messageHistory({
+        contactId: item.contactId,
+        limit: 50,
+        page: 1,
+      });
+
+      item.messages =
+        messageList.map((item) => {
+          return {
             date: now,
             showTime: true,
             contactId: item.contactId,
-            id: "message_id",
-            isRead: 0,
-            msgContent: "我会跟你聊聊天的哟",
-            msgStatus: 0,
-            msgTime: 0,
-            msgType: 2002,
-            senderAvatar: item.avatar,
-            senderId: item.contactId,
-            senderName: item.contactName,
-          },
-        ],
-      };
+            id: item.id,
+            isRead: item.isRead,
+            msgContent: item.msgContent,
+            msgStatus: item.msgStatus,
+            msgTime: item.msgTime,
+            msgType: item.msgType,
+            senderAvatar: item.senderAvatar,
+            senderId: item.senderId,
+            senderName: item.senderName,
+          };
+        }) || [];
     });
     return commit("initData", data);
   },
   updateChatInfo: ({ commit }, value) => commit("updateChatInfo", value),
   deleteChatByChatId: ({ commit }, value) =>
     commit("deleteChatByChatId", value),
-  sendMessage: async (
-    { commit, dispatch, state, rootState, rootGetters },
-    msg
-  ) => {
-    //TODO:
-    // const { content, type } = msg;
-    // const selectChatId = state.selectChatId;
-    // await sendMessage({
-    //   contactId: selectChatId,
-    //   msgContent: content,
-    //   msgMins: 0,
-    //   //消息类型 1000：系统消息 2001：文字消息 2002：图片消息 2003：语音消息 2004：视频消息 2005：图文链接 2006：名片消息 2007：表情消息 2010：文件消息 2013：小程序消息 2015：公众号消息
-    //   msgType: type,
-    //   ownId: rootState.user.info.wxid,
-    // });
+  sendMessage: async ({ commit, state, rootState }, msg) => {
+    const selectChatId = state.selectChatId;
+    const { content, type } = msg;
 
+    // let img = {
+    //   width: 120,
+    //   height: 120,
+    // };
+    // let file = {
+    //   filename: 120,
+    //   filesize: 120,
+    // };
+    // let video = {
+    //   width: 120,
+    //   height: 120,
+    //   type: "video/mp4",
+    // };
+    // let audio = {
+    //   width: 120,
+    //   height: 120,
+    //   type: "audio/mpeg",
+    // };
+
+    const { contactId, id, ownerId, status } = await sendMessage({
+      contactId: selectChatId,
+      msgContent: content,
+      msgExtend: "",
+      msgType: type,
+    });
+
+    let result = state.chatlist.find(
+      (session) => session.chatId === state.selectChatId
+    );
+    // debugger;
+    let now = new Date();
+    // 获取最后一条消息时间
+    let interval = timeDifference(result.lastMsgTime, now);
+    let showTime = false;
+    if (interval > 3) {
+      showTime = true;
+    }
+    const message = {
+      date: now,
+      showTime: showTime,
+      contactId: contactId,
+      id: id,
+      isRead: 1,
+      msgContent: content,
+      msgStatus: status,
+      msgTime: new Date(),
+      msgType: type,
+      senderAvatar: rootState.user.info.avatar,
+      senderId: ownerId,
+      senderName: rootState.user.info.username,
+    };
     commit("sendMessage", {
-      msg,
-      rootState,
+      message,
     });
   },
   async ["receiveMessage"](store, msg) {

@@ -26,13 +26,19 @@
       <ul v-if="selectedChat">
         <li v-for="item in showMessages" class="message-item" :key="item.id">
           <div class="time selectNone">
-            <span v-if="item.showTime">{{ item.date | time }}</span>
+            <span v-if="item.showTime">{{ item.msgTime | time }}</span>
           </div>
+
+          <div class="time selectNone" v-if="item.msgType == 1000">
+            <span>{{ item.msgContent }}</span>
+          </div>
+
           <div
+            v-else
             class="main"
             :class="{
-              self: isSelf(item.username),
-              other: !isSelf(item.senderName),
+              self: isSelf(item.senderId),
+              other: !isSelf(item.senderId),
             }"
           >
             <img
@@ -40,26 +46,43 @@
               width="36"
               height="36"
               @click.prevent="openMenu($event, item)"
-              :src="isSelf(item.username) ? user.avatar : item.senderAvatar"
+              :src="
+                isSelf(item.senderId) ? item.senderAvatar : item.senderAvatar
+              "
             />
             <!-- 以下是信息载体展示方式 -->
             <!-- 1000：系统消息 2001：文字消息 2002：图片消息 2003：语音消息 2004：视频消息 2005：图文链接 2006：名片消息 2007：表情消息 2010：文件消息 2013：小程序消息 2015：公众号消息 -->
             <!-- 目前只做 系统消息 2001：文字消息 2002 ：图片消息 2003 ：视频消息
-            2005 文件消息 2013-->
-            <div class="content" :class="{ 'text-msg': item.msgType == 2002 }">
+            2005 文件消息 -->
+            <div
+              class="content"
+              :class="{
+                'text-msg': item.msgType == 2001 || item.msgType == 2003,
+              }"
+            >
               <img
-                v-if="item.msgType == 2003"
+                v-if="item.msgType == 2002"
                 class="img-msg"
                 @click="
                   showImgWindow({
                     showImgWindow: true,
-                    src: item.msgContent,
+                    src:
+                      item.msgContent ||
+                      'https://wx.qlogo.cn/mmhead/ver_1/zCUzSJm8GhJl0pReqUNkcNNQicOU8f8RG7Z6h0ricRAzXwaCGExPgl7LuThygEEwAJFnDQORt5QicD4pU1kHU8CJhPhEAVnoqJxXXdicmljcySc/0',
                     width: 1280,
                     height: 720,
                   })
                 "
-                :src="item.msgContent"
+                :src="
+                  item.msgContent ||
+                  'https://wx.qlogo.cn/mmhead/ver_1/zCUzSJm8GhJl0pReqUNkcNNQicOU8f8RG7Z6h0ricRAzXwaCGExPgl7LuThygEEwAJFnDQORt5QicD4pU1kHU8CJhPhEAVnoqJxXXdicmljcySc/0'
+                "
               />
+              <div
+                v-if="item.msgType == 2003"
+                class="text"
+                v-html="replaceFace(item.msgContent || '无消息')"
+              ></div>
               <!-- TODO:这里缺失个视频消息 -->
               <div
                 v-if="item.msgType == 2013"
@@ -76,10 +99,11 @@
                   "
                 />
               </div>
+
               <div
-                v-if="item.msgType == 2002"
+                v-if="item.msgType == 2001"
                 class="text"
-                v-html="replaceFace(item.msgContent)"
+                v-html="replaceFace(item.msgContent || '无消息')"
               ></div>
             </div>
           </div>
@@ -110,8 +134,8 @@ export default {
       return this.$store.state.user.info;
     },
     isSelf() {
-      return (username) => {
-        return username === this.user.username;
+      return (wxid) => {
+        return wxid === this.user.wxid;
       };
     },
   },
@@ -245,6 +269,8 @@ export default {
     // 将日期过滤为 hour:minutes
     time(date) {
       if (typeof date === "string") {
+        date = new Date(date);
+      } else {
         date = new Date(date);
       }
       if (date.getMinutes() < 10) {

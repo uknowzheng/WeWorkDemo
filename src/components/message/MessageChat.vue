@@ -46,12 +46,11 @@
 
 <script>
 import CusConfirm from "@/components/other/confirm/CusConfirm";
-import GroupMessage from "./GroupMessage";
+
 import FriendMessage from "./FriendMessage";
 import { mapActions, mapGetters, mapState } from "vuex";
 export default {
   components: {
-    GroupMessage,
     FriendMessage,
     CusConfirm,
   },

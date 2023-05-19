@@ -302,13 +302,13 @@ export default {
       let content = "";
       if (this.imgReg.test(text)) {
         content = this.replaceImgToMsg(text);
-        this.sendMsg(content, 2);
+        this.sendMsg(content, 2002);
         textarea.innerHTML = "";
         return;
       }
       if (this.fileReg.test(text)) {
         content = this.replaceFileToMsg(text);
-        this.sendMsg(content, 3);
+        this.sendMsg(content, 2005);
         textarea.innerHTML = "";
         return;
       }
@@ -326,31 +326,15 @@ export default {
         }, 1000);
         return;
       }
-      this.sendMsg(content, 1);
+      this.sendMsg(content, 2001);
       textarea.innerHTML = "";
     },
     sendMsg(content, type) {
-      if (this.selectedChat.info.name === "机器人") {
-        this.$http
-          .get(`https://zhaoplus.com/api/AI?search=${content}`)
-          .then((res) => {
-            this.reply = res.data.result.text;
-            if (content.includes("/:")) {
-              this.reply = "嘻嘻";
-            }
-            let msg = {
-              content: content,
-              reply: this.reply,
-            };
-            this.$store.dispatch("chat/sendMessage", msg);
-          });
-      } else {
-        let msg = {
-          content: content,
-          type: type,
-        };
-        this.$store.dispatch("chat/sendMessage", msg);
-      }
+      let msg = {
+        content: content,
+        type: type,
+      };
+      this.$store.dispatch("chat/sendMessage", msg);
     },
     // 将表情替换成code
     replaceEmojiToCode(content) {

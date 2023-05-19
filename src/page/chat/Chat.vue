@@ -9,8 +9,7 @@
       <VText class="text"></VText>
     </div>
     <div v-if="isShow" class="chatInfo">
-      <FriendChatInfo v-if="selectedChat.type == 1" id="info"></FriendChatInfo>
-      <GroupChatInfo v-if="selectedChat.type == 2" id="info"></GroupChatInfo>
+      <FriendChatInfo id="info"></FriendChatInfo>
     </div>
   </div>
 </template>
@@ -19,7 +18,6 @@
 import SearchList from "@/components/search/SearchList";
 import ChatList from "@/components/chatlist/ChatList";
 import FriendChatInfo from "@/components/chatlist/FriendChatInfo";
-import GroupChatInfo from "@/components/chatlist/GroupChatInfo";
 import MessageChat from "@/components/message/MessageChat";
 import VText from "@/components/text/Text";
 import { mapGetters, mapState } from "vuex";
@@ -28,7 +26,6 @@ export default {
     SearchList,
     ChatList,
     FriendChatInfo,
-    GroupChatInfo,
     VText,
     MessageChat,
   },

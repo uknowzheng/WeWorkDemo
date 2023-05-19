@@ -78,7 +78,7 @@ function request(method, url, data) {
           case 500:
             // 处理500错误
             Vue.prototype.$message.error(
-              `Internal Server Error:${error.response.data}`
+              `Internal Server Error:${error.response.data.msg}`
             );
             break;
           // 其他错误码的处理...

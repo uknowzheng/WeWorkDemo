@@ -132,7 +132,7 @@ export default {
       return this.$store.state.user.info;
     },
     isSelf() {
-      return this.headMenu.info.username === this.self.username;
+      return this.headMenu.info.wxid === this.self.wxid;
     },
   },
   mounted() {

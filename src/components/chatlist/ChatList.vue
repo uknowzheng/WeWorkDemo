@@ -38,7 +38,8 @@
               replaceFace(
                 item.messages.length > 0
                   ? item.messages[item.messages.length - 1]
-                  : ''
+                  : '',
+                item
               )
             "
           ></p>
@@ -126,15 +127,17 @@ export default {
     }),
     // 将内容中属于表情的部分替换成emoji图片标签
     replaceFace(msg) {
-      // 目前只做 系统消息 2001：文字消息 2002 ：图片消息 2003 ：视频消息2005 文件消息 2013
+      // 目前只做 1000:系统消息 2001：文字消息 2002 ：图片消息 2003 ：视频消息2005 文件消息
       if (msg === "") {
         return "";
       }
-      //TODO:这里还要个视频消息
-      if (msg.type == 2003) {
+      if (msg.msgType == 2002) {
         return "[图片]";
       }
-      if (msg.type == 2013) {
+      if (msg.msgType == 2003) {
+        return "[视频]]";
+      }
+      if (msg.msgType == 2005) {
         return "[文件]";
       }
       let con = msg.msgContent;
