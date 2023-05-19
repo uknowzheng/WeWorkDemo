@@ -54,6 +54,12 @@ const mutations = {
   setFriendList(state, value) {
     state.friendlist = value;
   },
+  onlineStatusChange: (state, data) => {
+    let friend = state.friendlist.find(
+      (friend) => friend.contactId === data.contactId
+    );
+    friend.isOnline = data.status;
+  },
 };
 const actions = {
   selectFriend: ({ commit }, value) => commit("selectFriend", value),
@@ -108,12 +114,7 @@ const getters = {
     );
     return friend;
   },
-  onlineStatusChange: (state, data) => {
-    let friend = state.friendlist.find(
-      (friend) => friend.contactId === data.contactId
-    );
-    friend.isOnline = data.status;
-  },
+
   selectedFriendByUsername(state) {
     return function (username) {
       return state.friendlist.find((friend) => friend.username === username);

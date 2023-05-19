@@ -16,7 +16,6 @@ class CustomSocketIO {
 
     // 监听消息接收事件
     this.socket.onmessage = (event) => {
-      console.log("收到服务器消息:", event);
       const { data } = event;
       if (data) {
         const { type, data: body } = JSON.parse(data);

@@ -66,24 +66,19 @@
                 @click="
                   showImgWindow({
                     showImgWindow: true,
-                    src:
-                      item.msgContent ||
-                      'https://wx.qlogo.cn/mmhead/ver_1/zCUzSJm8GhJl0pReqUNkcNNQicOU8f8RG7Z6h0ricRAzXwaCGExPgl7LuThygEEwAJFnDQORt5QicD4pU1kHU8CJhPhEAVnoqJxXXdicmljcySc/0',
+                    src: item.msgContent,
                     width: 1280,
                     height: 720,
                   })
                 "
-                :src="
-                  item.msgContent ||
-                  'https://wx.qlogo.cn/mmhead/ver_1/zCUzSJm8GhJl0pReqUNkcNNQicOU8f8RG7Z6h0ricRAzXwaCGExPgl7LuThygEEwAJFnDQORt5QicD4pU1kHU8CJhPhEAVnoqJxXXdicmljcySc/0'
-                "
+                :src="item.msgContent"
               />
+              <!-- TODO:这里缺失个视频消息 -->
               <div
                 v-if="item.msgType == 2003"
                 class="text"
-                v-html="replaceFace(item.msgContent || '无消息')"
+                v-html="replaceFace(item.msgContent || '[视频消息]')"
               ></div>
-              <!-- TODO:这里缺失个视频消息 -->
               <div
                 v-if="item.msgType == 2005"
                 class="file-msg"

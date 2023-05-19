@@ -63,43 +63,19 @@ export function registerWebSocket() {
     });
   });
 
-  socket.setResponseHandler(
-    "chatSendStatus",
-    (data = { contactId: "string", id: "string", status: 0 }) => {
-      Vue.prototype.$store.dispatch("chat/", data);
-    }
-  );
+  socket.setResponseHandler("chatSendStatus", (data) => {
+    console.log("收到chatSendStatus消息:", data);
+    Vue.prototype.$store.dispatch("chat/", data);
+  });
 
-  socket.setResponseHandler(
-    "singleChat",
-    (
-      data = {
-        contactId: "string",
-        id: "string",
-        isRead: 0,
-        msgContent: "string",
-        msgStatus: 0,
-        msgTime: 0,
-        msgType: 0,
-        senderAvatar: "string",
-        senderId: "string",
-        senderName: "string",
-      }
-    ) => {
-      Vue.prototype.$store.dispatch("chat/receiveMessage", data);
-    }
-  );
-  socket.setResponseHandler(
-    "onlineStatus",
-    (
-      data = {
-        contactId: "string",
-        status: "string",
-      }
-    ) => {
-      Vue.prototype.$store.commit("friend/onlineStatusChange", data);
-    }
-  );
+  socket.setResponseHandler("singleChat", (data) => {
+    console.log("收到singleChat消息:", data);
+    Vue.prototype.$store.dispatch("chat/receiveMessage", data);
+  });
+  socket.setResponseHandler("onlineStatus", (data) => {
+    console.log("收到onlineStatus消息:", data);
+    Vue.prototype.$store.commit("friend/onlineStatusChange", data);
+  });
 
   // 断开连接
   // socket.disconnect();
