@@ -16,6 +16,7 @@ Vue.prototype.$confirm = CusConfirm.install;
  * @description 全局注册应用配置
  */
 Vue.prototype.$config = config;
+Vue.prototype.$store = store;
 
 Vue.config.productionTip = false;
 

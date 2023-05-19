@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import { getTimestamp, getFileSizeStr } from "@/libs/tools";
 export default {
   data() {
@@ -100,6 +100,9 @@ export default {
     });
   },
   methods: {
+    ...mapActions({
+      uploadAssetsFile: "chat/uploadAssetsFile",
+    }),
     pasteListener(e) {
       let items = e.clipboardData && e.clipboardData.items;
       if (items && items.length) {
@@ -176,7 +179,7 @@ export default {
       this.showFileText(file);
     },
     // 显示文件对应的图片
-    showFileText(file) {
+    async showFileText(file) {
       if (file) {
         let size = Math.floor(file.size / 1024);
         if (size > 10 * 1024) {
@@ -184,30 +187,25 @@ export default {
           return false;
         }
         let textarea = this.$refs.text;
-        // 声明js的文件流
-        let reader = new FileReader();
-        //  通过文件流将文件转换成Base64字符串
-        reader.readAsDataURL(file);
-        //   转换成功后
-        let id = getTimestamp();
-        reader.onloadend = () => {
-          this.getFileHtml(file, (dataURL, fileType, fileSize) => {
-            let content =
-              '<img cct="2" style="width: 250px;border: 1px solid #D0D0D0" id="' +
-              id +
-              '" file-type="' +
-              fileType +
-              '" file-size="' +
-              fileSize +
-              '"file-name="' +
-              file.name +
-              '" />&nbsp';
-            textarea.innerHTML = content;
-            let img = document.getElementById(id);
-            img.src = dataURL;
-            this.file = file;
-          });
-        };
+
+        const fileUrl = await this.uploadAssetsFile(file);
+        this.getFileHtml(file, (dataURL, fileType, fileSize) => {
+          let id = getTimestamp();
+          let content =
+            '<img cct="2" style="width: 250px;border: 1px solid #D0D0D0" id="' +
+            id +
+            '" file-type="' +
+            fileType +
+            '" file-size="' +
+            fileSize +
+            '"file-name="' +
+            file.name +
+            '" />&nbsp';
+          textarea.innerHTML = content;
+          let img = document.getElementById(id);
+          img.src = dataURL;
+          this.file = fileUrl;
+        });
       }
     },
     // 根据文件生成对应的图标
@@ -241,7 +239,7 @@ export default {
         canvas = null;
       };
     },
-    showImgText(file) {
+    async showImgText(file) {
       if (file) {
         let size = Math.floor(file.size / 1024);
         if (size > 2 * 1024) {
@@ -249,34 +247,30 @@ export default {
           return false;
         }
         let textarea = this.$refs.text;
-        // 声明js的文件流
-        let reader = new FileReader();
-        //  通过文件流将文件转换成Base64字符串
-        reader.readAsDataURL(file);
-        //   转换成功后
-        let id = getTimestamp();
-        reader.onloadend = () => {
-          let image = new Image();
-          image.onload = function () {
-            let width = image.width;
-            let height = image.height;
-            let content = textarea.innerHTML;
-            content =
-              '<img cct="1" style="max-width: 140px;max-height: 160px;" id="' +
-              id +
-              '" c-width="' +
-              width +
-              '" c-height="' +
-              height +
-              '" />';
-            textarea.innerHTML = content;
-            let img = document.getElementById(id);
-            img.src = reader.result;
-            image = null;
-          };
-          // 将转换结果赋值给img标签
-          image.src = reader.result;
+
+        const fileUrl = await this.uploadAssetsFile(file);
+
+        let image = new Image();
+        image.onload = function () {
+          let width = image.width;
+          let height = image.height;
+          let content = textarea.innerHTML;
+          let id = getTimestamp();
+          content =
+            '<img cct="1" style="max-width: 140px;max-height: 160px;" id="' +
+            id +
+            '" c-width="' +
+            width +
+            '" c-height="' +
+            height +
+            '" />';
+          textarea.innerHTML = content;
+          let img = document.getElementById(id);
+          img.src = fileUrl;
+          image = null;
         };
+        image.src = fileUrl;
+        // 将转换结果赋值给img标签
       }
     },
     // 监听回退按键

@@ -19,6 +19,7 @@ module.exports = {
       "/banana": {
         target: config.devHost,
         changeOrigin: true,
+        ws: true,
         // pathRewrite: {
         //   "^/banana": "",
         // },

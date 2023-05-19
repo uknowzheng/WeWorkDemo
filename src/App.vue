@@ -9,10 +9,8 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
 export default {
   created() {
-    this.$store.dispatch("chat/initData");
     window.fullHeight = document.documentElement.clientHeight;
     window.fullWidth = document.documentElement.clientWidth;
     this.$store.commit("system/setWindowWidth", window.fullWidth);

@@ -7,11 +7,11 @@
           selectedChat.contactName
         }}</span>
       </div>
-      <i
+      <!-- <i
         style="cursor: pointer"
         @click="showChatInfo"
         class="icon iconfont icon-more info"
-      ></i>
+      ></i> -->
     </header>
     <div
       class="message-wrapper scrollbar"
@@ -85,16 +85,20 @@
               ></div>
               <!-- TODO:这里缺失个视频消息 -->
               <div
-                v-if="item.msgType == 2013"
+                v-if="item.msgType == 2005"
                 class="file-msg"
                 @click="downloadFile(item.msgContent)"
               >
-                <p class="file-name">{{ item.content.fileName }}</p>
-                <p class="file-size">{{ item.content.fileSize }}</p>
+                <p class="file-name">
+                  {{ item.msgExtend.fileName }}
+                </p>
+                <p class="file-size">
+                  {{ item.msgExtend.fileSize }}
+                </p>
                 <img
                   :src="
-                    systemFileIcon[item.content.fileType] != null
-                      ? systemFileIcon[item.content.fileType]
+                    systemFileIcon[item.msgExtend.fileType] != null
+                      ? systemFileIcon[item.msgExtend.fileType]
                       : 'static/images/file.png'
                   "
                 />
@@ -106,6 +110,7 @@
                 v-html="replaceFace(item.msgContent || '无消息')"
               ></div>
             </div>
+            <i :class="item.isRead > 0 ? 'el-icon-success' : 'el-icon-error'" />
           </div>
         </li>
       </ul>

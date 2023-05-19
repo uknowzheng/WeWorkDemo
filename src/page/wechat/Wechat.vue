@@ -29,11 +29,29 @@ export default {
       },
     };
   },
-  created() {
-    this.initUserInfo();
-    this.initFriendList();
-    this.initGroupChatList();
-    // 允许浏览器通知
+  async created() {
+    await this.initUserInfo();
+    await this.initFriendList();
+    await this.initChatData();
+    await this.initWSServer();
+    // setInterval(() => {
+    //   // 允许浏览器通知
+    //   this.$store.dispatch("chat/receiveMessage", {
+    //     id: "645371ed27326e26969a63f9",
+    //     msgType: 2001,
+    //     msgContent: "以上是打招呼的内容,waaaaaa",
+    //     msgExtend: "",
+    //     msgStatus: 1,
+    //     msgTime: 1683190253707,
+    //     ownerId: "13800000000",
+    //     contactId: "cmo3am4xeGQ2dGYzMjI1@c2locnltZm83NTJmMjI1",
+    //     senderId: "cmo3am4xeGQ2dGYzMjI1@c2locnltZm83NTJmMjI1",
+    //     senderName: "美美玉mon",
+    //     senderAvatar:
+    //       "https://wx.qlogo.cn/mmhead/ver_1/zCUzSJm8GhJl0pReqUNkcNNQicOU8f8RG7Z6h0ricRAzXwaCGExPgl7LuThygEEwAJFnDQORt5QicD4pU1kHU8CJhPhEAVnoqJxXXdicmljcySc/0",
+    //     isRead: 0,
+    //   });
+    // }, 2000);
     this.allowNotification();
   },
   beforeMount() {
@@ -63,8 +81,9 @@ export default {
     }),
     ...mapActions({
       initFriendList: "friend/getFriendList",
+      initWSServer: "chat/initWSServer",
+      initChatData: "chat/initData",
     }),
-    initGroupChatList() {},
     //申请浏览器通知权限，具体参见链接 https://developer.mozilla.org/en-US/docs/Web/API/Notification/Notification
     allowNotification() {
       if (!("Notification" in window)) {

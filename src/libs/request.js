@@ -28,7 +28,7 @@ instance.interceptors.request.use(
 // 封装的请求方法...
 
 // 封装的通用请求函数
-function request(method, url, data) {
+function request(method, url, data, isFile = false) {
   const config = {
     method: method,
     url: url,
@@ -38,6 +38,11 @@ function request(method, url, data) {
   if (method.toLowerCase() === "get" || method.toLowerCase() === "delete") {
     config.params = data;
   } else {
+    if (isFile) {
+      config.headers = {
+        "Content-Type": "multipart/form-data",
+      };
+    }
     config.data = data;
   }
 
@@ -96,5 +101,6 @@ function request(method, url, data) {
 // 导出封装后的请求方法
 export const get = (url, data) => request("get", url, data);
 export const post = (url, data) => request("post", url, data);
+export const uploadFile = (url, data) => request("post", url, data, true);
 // export const put = (url, data) => request("put", url, data);
 // export const delete=(url, data) => request("delete", url, data);

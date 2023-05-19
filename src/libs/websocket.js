@@ -1,30 +1,40 @@
-import io from "socket.io-client";
-
 class CustomSocketIO {
-  constructor(url, options = {}) {
+  constructor(url) {
     this.url = url;
-    this.options = options;
     this.socket = null;
     this.responseHandlers = {};
   }
 
   connect() {
-    this.socket = io(this.url, this.options);
+    // 创建 WebSocket 连接
+    this.socket = new WebSocket(this.url);
 
-    this.socket.on("connect", () => {
-      console.log("Socket.IO连接已建立");
-    });
+    // 监听连接建立事件
+    this.socket.onopen = () => {
+      console.log("WebSocket 连接已建立");
+    };
 
-    this.socket.on("disconnect", () => {
-      console.log("Socket.IO连接已断开");
-    });
-
-    this.socket.on("response", (response) => {
-      const { type, data } = response;
-      if (this.responseHandlers[type]) {
-        this.responseHandlers[type](data);
+    // 监听消息接收事件
+    this.socket.onmessage = (event) => {
+      console.log("收到服务器消息:", event);
+      const { data } = event;
+      if (data) {
+        const { type, data: body } = JSON.parse(data);
+        if (this.responseHandlers[type]) {
+          this.responseHandlers[type](body);
+        }
       }
-    });
+    };
+
+    // 监听连接关闭事件
+    this.socket.onclose = () => {
+      console.log("WebSocket 连接已关闭");
+    };
+
+    // 监听连接错误事件
+    this.socket.onerror = (error) => {
+      console.error("WebSocket 错误:", error);
+    };
   }
 
   disconnect() {
@@ -33,26 +43,13 @@ class CustomSocketIO {
     }
   }
 
-  emit(event, data, onResponse) {
-    if (this.socket) {
-      this.socket.emit(event, data, onResponse);
-    }
-  }
-
-  on(event, callback) {
-    if (this.socket) {
-      this.socket.on(event, callback);
-    }
-  }
-
-  off(event, callback) {
-    if (this.socket) {
-      this.socket.off(event, callback);
-    }
-  }
-
   setResponseHandler(type, handler) {
     this.responseHandlers[type] = handler;
+  }
+
+  sendMessage(data) {
+    // 发送数据到服务器
+    this.socket.send(JSON.stringify(data));
   }
 }
 

@@ -1,6 +1,13 @@
 import { timeDifference, base64toFile } from "@/libs/tools";
 
-import { sendMessage, messageHistory, dialogBox } from "@/api/chat";
+import {
+  sendMessage,
+  messageHistory,
+  dialogBox,
+  registerWebSocket,
+  setRead,
+  uploadAssets,
+} from "@/api/chat";
 
 const now = new Date();
 // namespaced: true 的方式使其成为带命名空间的模块。保证在变量名一样的时候，添加一个父级名拼接。
@@ -20,8 +27,7 @@ const mutations = {
   selectSession(state, value) {
     state.selectChatId = value;
     let chat = state.chatlist.find((session) => session.chatId === value);
-    chat.newMsgNum = 0;
-    chat.isShow = true;
+    chat.noReadNum = 0;
   },
   // 更新聊天信息
   updateChatInfo(state, value) {
@@ -67,60 +73,7 @@ const mutations = {
     //   return;
     // }
   },
-  async ["receiveMessage"](state, { commit, msg, rootGetters }) {
-    let result = state.chatlist.find(
-      (session) => session.chatId === msg.sendId
-    );
-    let showTime = true;
-    if (!result) {
-      let info = {};
-      if (msg.msgType == 1) {
-        info = rootGetters["friend/selectedFriendByUsername"](msg.username);
-        info.chatId = info.username;
-      } else {
-        let groupChat = rootGetters["groupchat/selectedGroupChatByNo"](
-          msg.sendId
-        );
-        info.nickname = groupChat.groupName;
-        info.avatar = groupChat.groupAvatar;
-        info.remark = groupChat.remark;
-        info.notDisturb = groupChat.notDisturb;
-        info.chatId = groupChat.groupNo;
-      }
-      result = {
-        type: msg.msgType,
-        chatId: info.chatId,
-        info: {
-          nickname: info.nickname,
-          avatar: info.avatar,
-          remark: info.remark,
-          notDisturb: info.notDisturb,
-        },
-        isShow: true,
-        newMsgNum: 0,
-        messages: [],
-      };
-    } else {
-      // 对比最后一条消息时间
-      let interval = timeDifference(new Date(result.lastMsgTime), now);
-      if (interval < 3) {
-        showTime = false;
-      }
-    }
-    if (state.selectChatId !== result.chatId) {
-      result.newMsgNum = result.newMsgNum + 1;
-    }
-    result.lastMsgTime = new Date(msg.sendTime);
 
-    result.messages.push({
-      type: msg.contentType,
-      username: msg.username,
-      content: msg.msgContent,
-      date: new Date(msg.sendTime),
-      showTime: showTime,
-    });
-    commit("topChat", result);
-  },
   // 置顶聊天
   topChat(state, chat) {
     let has = false;
@@ -141,19 +94,30 @@ const mutations = {
     } else {
       chat.index = 1;
       chat.id = 1;
-      chat.isShow = true;
       state.chatlist.unshift(chat);
     }
   },
 };
 const actions = {
-  selectSession: ({ commit }, value) => commit("selectSession", value),
+  selectSession: async ({ commit }, value) => {
+    let chat = state.chatlist.find((session) => session.chatId === value);
+    chat.messages.forEach(async (msg) => {
+      if (!msg.isRead) {
+        await setRead({
+          contactId: msg.contactId,
+          id: msg.id,
+        });
+        msg.isRead = 1;
+      }
+    });
+    commit("selectSession", value);
+  },
   initData: async ({ commit }) => {
     // TODO: 这里先是获取聊天室列表，后续要调用messageHistory加载每个聊天窗口的最近一次的历史信息列表，当用户进入窗口后，要遍历所有消息改成已读setRead
     const chatList = await dialogBox();
     let data = chatList.map((item, index) => {
       return {
-        id: 1,
+        id: item.contactId,
         index: index + 1,
         chatId: item.contactId,
         contactId: item.contactId,
@@ -165,7 +129,8 @@ const actions = {
       };
     });
 
-    data.forEach(async (item) => {
+    for (let i = 0; i < data.length; i++) {
+      const item = data[i];
       const messageList = await messageHistory({
         contactId: item.contactId,
         limit: 50,
@@ -181,6 +146,7 @@ const actions = {
             id: item.id,
             isRead: item.isRead,
             msgContent: item.msgContent,
+            msgExtend: item.msgExtend ? JSON.parse(item.msgExtend) : null,
             msgStatus: item.msgStatus,
             msgTime: item.msgTime,
             msgType: item.msgType,
@@ -189,12 +155,71 @@ const actions = {
             senderName: item.senderName,
           };
         }) || [];
-    });
+    }
     return commit("initData", data);
+  },
+  initWSServer: ({ commit }) => {
+    registerWebSocket(commit);
+  },
+  receiveMessage: async ({ state, commit }, data) => {
+    let result = state.chatlist.find(
+      (session) => session.chatId === data.senderId
+    );
+    let showTime = true;
+    if (!result) {
+      result = {
+        id: data.senderId,
+        chatId: data.senderId,
+        contactId: data.senderId,
+        contactName: data.senderName,
+        avatar: data.senderAvatar, //头像
+        noReadNum: 1,
+        lastMsgTime: new Date(data.msgTime),
+        messages: [],
+      };
+    } else {
+      // 对比最后一条消息时间
+      let interval = timeDifference(new Date(result.lastMsgTime), now);
+      if (interval < 3) {
+        showTime = false;
+      }
+    }
+    let isRead = false;
+    if (state.selectChatId !== result.chatId) {
+      result.noReadNum = result.noReadNum + 1;
+    } else {
+      await setRead({
+        contactId: data.senderId,
+        id: data.id,
+      });
+      isRead = true;
+    }
+    result.lastMsgTime = new Date(data.msgTime);
+
+    result.messages.push({
+      date: new Date(data.msgTime),
+      showTime: showTime,
+      contactId: data.senderId,
+      id: data.id,
+      isRead: isRead,
+      msgContent: data.msgContent,
+      msgExtend: data.msgExtend ? JSON.parse(data.msgExtend) : null,
+      msgStatus: data.msgStatus,
+      msgTime: data.msgTime,
+      msgType: data.msgType,
+      senderAvatar: data.senderAvatar,
+      senderId: data.senderId,
+      senderName: data.senderName,
+    });
+    commit("topChat", result);
   },
   updateChatInfo: ({ commit }, value) => commit("updateChatInfo", value),
   deleteChatByChatId: ({ commit }, value) =>
     commit("deleteChatByChatId", value),
+  uploadAssetsFile: async (_, file) => {
+    const rsp = await uploadAssets(file);
+    return rsp;
+  },
   sendMessage: async ({ commit, state, rootState }, msg) => {
     const selectChatId = state.selectChatId;
     const { content, type } = msg;
@@ -202,6 +227,11 @@ const actions = {
     // let img = {
     //   width: 120,
     //   height: 120,
+    //     {
+    //     "width": 656,
+    //     "height": 878,
+    //     "src": "http://118.31.43.13:9000/material/20230519223644.png"
+    // }
     // };
     // let file = {
     //   filename: 120,
@@ -218,17 +248,34 @@ const actions = {
     //   type: "audio/mpeg",
     // };
 
-    const { contactId, id, ownerId, status } = await sendMessage({
-      contactId: selectChatId,
-      msgContent: content,
-      msgExtend: "",
-      msgType: type,
-    });
+    let reqData = null;
+    switch (type) {
+      case 2001:
+        reqData = {
+          contactId: selectChatId,
+          msgContent: content,
+          msgType: type,
+        };
+        break;
+      case 2002:
+      case 2003:
+      case 2005:
+        reqData = {
+          contactId: selectChatId,
+          msgContent: content.src,
+          msgType: type,
+          msgExtend: JSON.stringify(content),
+        };
+        break;
+      default:
+        break;
+    }
+
+    const { contactId, id, ownerId, status } = await sendMessage(reqData);
 
     let result = state.chatlist.find(
       (session) => session.chatId === state.selectChatId
     );
-    // debugger;
     let now = new Date();
     // 获取最后一条消息时间
     let interval = timeDifference(result.lastMsgTime, now);
@@ -239,27 +286,21 @@ const actions = {
     const message = {
       date: now,
       showTime: showTime,
-      contactId: contactId,
+      contactId: reqData.contactId,
       id: id,
       isRead: 1,
-      msgContent: content,
+      msgContent: reqData.msgContent,
+      msgExtend: content,
       msgStatus: status,
       msgTime: new Date(),
-      msgType: type,
+      msgType: reqData.msgType,
       senderAvatar: rootState.user.info.avatar,
       senderId: ownerId,
       senderName: rootState.user.info.username,
     };
+    debugger;
     commit("sendMessage", {
       message,
-    });
-  },
-  async ["receiveMessage"](store, msg) {
-    const { commit, dispatch, state, rootState, rootGetters } = store;
-    commit("receiveMessage", {
-      commit,
-      msg,
-      rootGetters,
     });
   },
   topChat: ({ commit }, chat) => commit("topChat", chat),

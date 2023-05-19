@@ -1,6 +1,7 @@
-import { post } from "../libs/request";
+import { post, uploadFile } from "../libs/request";
 import CustomSocketIO from "../libs/websocket";
 import { getCookie, TOKEN_KEY } from "../libs/util";
+import Vue from "vue";
 
 export function dialogBox() {
   return post("/banana/im/chat/dialogBox");
@@ -29,6 +30,11 @@ export function sendMessage(
 ) {
   return post("/banana/im/chat/sendMessage", params);
 }
+export function uploadAssets(filePath) {
+  const formData = new FormData();
+  formData.append("file", filePath);
+  return uploadFile("/banana/im/file/upload", formData);
+}
 
 export function setRead(
   params = {
@@ -42,24 +48,58 @@ export function setRead(
 
 export function registerWebSocket() {
   const token = getCookie(TOKEN_KEY);
-  const socket = new CustomSocketIO(`/banana/websocket/msg/${token}`);
+  const socket = new CustomSocketIO(
+    `ws://118.31.43.13:8008/banana/websocket/msg/${token}`
+  );
 
   // 建立连接
   socket.connect();
-
   // 设置不同类型响应的处理函数
-  socket.setResponseHandler("success", (data) => {
-    console.log("处理类型为 success 的响应:", data);
+  socket.setResponseHandler("heartBeat", () => {
+    console.log("处理类型为heartBeat的响应!");
+    socket.sendMessage({
+      type: "heartBeat",
+      data: "1",
+    });
   });
 
-  socket.setResponseHandler("error", (data) => {
-    console.log("处理类型为 error 的响应:", data);
-  });
+  socket.setResponseHandler(
+    "chatSendStatus",
+    (data = { contactId: "string", id: "string", status: 0 }) => {
+      Vue.prototype.$store.dispatch("chat/", data);
+    }
+  );
 
-  // 发送事件
-  socket.emit("request", { id: 1 }, (response) => {
-    console.log("收到响应:", response);
-  });
+  socket.setResponseHandler(
+    "singleChat",
+    (
+      data = {
+        contactId: "string",
+        id: "string",
+        isRead: 0,
+        msgContent: "string",
+        msgStatus: 0,
+        msgTime: 0,
+        msgType: 0,
+        senderAvatar: "string",
+        senderId: "string",
+        senderName: "string",
+      }
+    ) => {
+      Vue.prototype.$store.dispatch("chat/receiveMessage", data);
+    }
+  );
+  socket.setResponseHandler(
+    "onlineStatus",
+    (
+      data = {
+        contactId: "string",
+        status: "string",
+      }
+    ) => {
+      Vue.prototype.$store.commit("friend/onlineStatusChange", data);
+    }
+  );
 
   // 断开连接
   // socket.disconnect();
