@@ -10,7 +10,6 @@ const state = {
 const mutations = {
   // 得知用户当前选择的是哪个好友。
   selectFriend(state, value) {
-    debugger;
     state.selectFriendNo = value;
   },
   addFriend(state, value) {

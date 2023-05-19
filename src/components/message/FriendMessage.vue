@@ -4,9 +4,7 @@
     <header class="header selectNone" v-drag>
       <div class="friendName">
         <span style="cursor: pointer" @click="showChatInfo">{{
-          selectedChat.info.remark === ""
-            ? selectedChat.info.nickname
-            : selectedChat.info.remark
+          selectedChat.contactName
         }}</span>
       </div>
       <i
@@ -34,7 +32,7 @@
             class="main"
             :class="{
               self: isSelf(item.username),
-              other: !isSelf(item.username),
+              other: !isSelf(item.senderName),
             }"
           >
             <img
@@ -42,28 +40,31 @@
               width="36"
               height="36"
               @click.prevent="openMenu($event, item)"
-              :src="
-                isSelf(item.username) ? user.avatar : selectedChat.info.avatar
-              "
+              :src="isSelf(item.username) ? user.avatar : item.senderAvatar"
             />
-            <div class="content" :class="{ 'text-msg': item.type == 1 }">
+            <!-- 以下是信息载体展示方式 -->
+            <!-- 1000：系统消息 2001：文字消息 2002：图片消息 2003：语音消息 2004：视频消息 2005：图文链接 2006：名片消息 2007：表情消息 2010：文件消息 2013：小程序消息 2015：公众号消息 -->
+            <!-- 目前只做 系统消息 2001：文字消息 2002 ：图片消息 2003 ：视频消息
+            2005 文件消息 2013-->
+            <div class="content" :class="{ 'text-msg': item.msgType == 2002 }">
               <img
+                v-if="item.msgType == 2003"
                 class="img-msg"
                 @click="
                   showImgWindow({
                     showImgWindow: true,
-                    src: item.content.src,
-                    width: item.content.width,
-                    height: item.content.height,
+                    src: item.msgContent,
+                    width: 1280,
+                    height: 720,
                   })
                 "
-                v-if="item.type == 2"
-                :src="item.content.src"
+                :src="item.msgContent"
               />
+              <!-- TODO:这里缺失个视频消息 -->
               <div
+                v-if="item.msgType == 2013"
                 class="file-msg"
-                v-if="item.type == 3"
-                @click="downloadFile(item.content.src)"
+                @click="downloadFile(item.msgContent)"
               >
                 <p class="file-name">{{ item.content.fileName }}</p>
                 <p class="file-size">{{ item.content.fileSize }}</p>
@@ -76,9 +77,9 @@
                 />
               </div>
               <div
+                v-if="item.msgType == 2002"
                 class="text"
-                v-if="item.type == 1"
-                v-html="replaceFace(item.content)"
+                v-html="replaceFace(item.msgContent)"
               ></div>
             </div>
           </div>

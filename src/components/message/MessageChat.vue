@@ -1,12 +1,7 @@
 <!-- 消息框 -->
 <template>
   <div class="message">
-    <template v-if="selectedChat.type === 1">
-      <FriendMessage></FriendMessage>
-    </template>
-    <template v-if="selectedChat.type === 2">
-      <GroupMessage></GroupMessage>
-    </template>
+    <FriendMessage></FriendMessage>
 
     <CusConfirm
       :height="getWidth(imgWindow.width, imgWindow.height).height"

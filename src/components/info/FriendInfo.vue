@@ -55,17 +55,18 @@ export default {
     // 添加该好友的对话 并置顶
     send() {
       let friend = this.selectedFriend;
-      let msg = this.getChatByChatId(friend.username);
+      debugger;
+      let msg = this.getChatByChatId(friend.contactId);
       if (!msg) {
-        this.$store.dispatch("friend/selectFriend", friend.username);
+        this.$store.dispatch("friend/selectFriend", friend.contactId);
         let chat = {
           type: 1,
-          chatId: friend.username,
+          chatId: friend.contactId,
           info: {
-            username: friend.username,
-            nickname: friend.nickname,
+            username: friend.contactName,
+            nickname: friend.contactName,
             avatar: friend.avatar,
-            remark: friend.remark,
+            remark: friend.contactName,
             notDisturb: false,
           },
           newMsgNum: 0,
@@ -79,10 +80,10 @@ export default {
           ],
         };
         this.$store.dispatch("chat/topChat", chat);
-        this.$store.dispatch("chat/selectSession", friend.username);
+        this.$store.dispatch("chat/selectSession", friend.contactId);
       } else {
-        this.$store.dispatch("chat/selectSession", msg.info.username);
-        this.$store.dispatch("friend/selectFriend", msg.info.username);
+        this.$store.dispatch("chat/selectSession", msg.contactId);
+        this.$store.dispatch("friend/selectFriend", msg.contactId);
       }
       this.$router.push({ path: "/chat" });
     },

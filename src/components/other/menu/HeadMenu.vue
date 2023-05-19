@@ -10,14 +10,16 @@
     <div class="esInfo">
       <div class="left">
         <div class="people">
-          <div class="nickname">{{ user.nickname }}</div>
+          <div class="nickname">{{ user.contactName }}</div>
           <div
             :class="[user.sex === 1 ? 'gender-male' : 'gender-female']"
           ></div>
           <div class="infoItem">
             <div class="item wxid">
               <div class="lable" style="width: 40px">微信号:</div>
-              <div class="lable" style="margin-left: 5px">{{ user.wxid }}</div>
+              <div class="lable" style="margin-left: 5px">
+                {{ user.contactId }}
+              </div>
             </div>
           </div>
         </div>
@@ -131,23 +133,6 @@ export default {
     },
     isSelf() {
       return this.headMenu.info.username === this.self.username;
-    },
-  },
-  watch: {
-    headMenu(value) {
-      // 更新好友信息
-      if (
-        value.visible &&
-        !value.self &&
-        value.info.initial != null &&
-        value.info.initial.trim() !== ""
-      ) {
-        // getFriendInfo(value.info.username).then((res) => {
-        //   if (res.code == 0) {
-        //     this.updateFriend(res.data);
-        //   }
-        // });
-      }
     },
   },
   mounted() {

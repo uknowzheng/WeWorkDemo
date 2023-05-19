@@ -64,10 +64,12 @@ function request(method, url, data) {
           case 401:
             // 处理400错误
             Vue.prototype.$message.error("Unauthorized");
+            Vue.prototype.$router.push("/login");
             break;
           case 403:
             // 处理401错误
             Vue.prototype.$message.error("Forbidden");
+            Vue.prototype.$router.push("/login");
             break;
           case 404:
             // 处理404错误

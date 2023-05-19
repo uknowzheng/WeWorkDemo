@@ -2,56 +2,48 @@
 <template>
   <div class="msglist selectNone">
     <ul>
-      <template v-for="item in searchedChatlist">
-        <li
-          v-if="item.isShow"
-          :key="item.id"
-          class="sessionlist"
-          :class="{ active: item.chatId === selectChatId }"
-          @contextmenu.prevent="openMenu($event, item)"
-          @click="selectSession(item.chatId)"
-        >
-          <div class="list-left">
-            <img
-              class="avatar"
-              width="40"
-              height="40"
-              :alt="
-                item.info.remark === '' ? item.info.nickname : item.info.remark
-              "
-              :src="item.info.avatar"
-            />
-            <Badge
-              v-if="item.newMsgNum > 0"
-              :count="item.newMsgNum"
-              :overflowCount="99"
-              :showNum="!item.info.notDisturb"
-              :width="16"
-              :height="16"
-            ></Badge>
-          </div>
-          <div class="list-right">
-            <p class="name">
-              {{
-                item.info.remark === null || item.info.remark === ""
-                  ? item.info.nickname
-                  : item.info.remark
-              }}
-            </p>
-            <span class="time" v-text="getTimes(item.lastMsgTime)"></span>
-            <p
-              class="lastmsg"
-              v-html="
-                replaceFace(
-                  item.messages.length > 0
-                    ? item.messages[item.messages.length - 1]
-                    : ''
-                )
-              "
-            ></p>
-          </div>
-        </li>
-      </template>
+      <li
+        v-for="item in searchedChatlist"
+        :key="item.chatId"
+        class="sessionlist"
+        :class="{ active: item.chatId === selectChatId }"
+        @contextmenu.prevent="openMenu($event, item)"
+        @click="selectSession(item.chatId)"
+      >
+        <div class="list-left">
+          <img
+            class="avatar"
+            width="40"
+            height="40"
+            :alt="item.contactId"
+            :src="item.avatar"
+          />
+          <Badge
+            v-if="item.noReadNum > 0"
+            :count="item.noReadNum"
+            :overflowCount="99"
+            :showNum="true"
+            :width="16"
+            :height="16"
+          ></Badge>
+        </div>
+        <div class="list-right">
+          <p class="name">
+            {{ item.contactName }}
+          </p>
+          <span class="time" v-text="getTimes(item.lastMsgTime)"></span>
+          <p
+            class="lastmsg"
+            v-html="
+              replaceFace(
+                item.messages.length > 0
+                  ? item.messages[item.messages.length - 1]
+                  : ''
+              )
+            "
+          ></p>
+        </div>
+      </li>
     </ul>
     <context-menu class="right-menu" :offset="menuOffset">
       <template v-slot:menuItem>
@@ -134,16 +126,18 @@ export default {
     }),
     // 将内容中属于表情的部分替换成emoji图片标签
     replaceFace(msg) {
+      // 目前只做 系统消息 2001：文字消息 2002 ：图片消息 2003 ：视频消息2005 文件消息 2013
       if (msg === "") {
         return "";
       }
-      if (msg.type == 2) {
+      //TODO:这里还要个视频消息
+      if (msg.type == 2003) {
         return "[图片]";
       }
-      if (msg.type == 3) {
+      if (msg.type == 2013) {
         return "[文件]";
       }
-      let con = msg.content;
+      let con = msg.msgContent;
       if (con.includes("@::tt;;@")) {
         let emojis = this.emojis;
         for (let i = 0; i < emojis.length; i++) {
