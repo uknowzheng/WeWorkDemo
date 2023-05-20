@@ -21,9 +21,9 @@
         @mousedown="del"
       ></div>
     </div>
-    <div class="add" @click="$emit('add')">
+    <!-- <div class="add" @click="$emit('add')">
       <i class="icon iconfont icon-add"></i>
-    </div>
+    </div> -->
   </div>
 </template>
 

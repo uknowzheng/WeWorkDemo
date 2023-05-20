@@ -65,7 +65,7 @@ export function registerWebSocket() {
 
   socket.setResponseHandler("chatSendStatus", (data) => {
     console.log("收到chatSendStatus消息:", data);
-    Vue.prototype.$store.dispatch("chat/", data);
+    Vue.prototype.$store.commit("chat/changeMessageStatus", data);
   });
 
   socket.setResponseHandler("singleChat", (data) => {

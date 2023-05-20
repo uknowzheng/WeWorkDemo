@@ -30,6 +30,11 @@
         <div class="list-right">
           <p class="name">
             {{ item.contactName }}
+            <!-- <i
+              style="margin-left: 5px"
+              :style="`color:${item.isOnline === 'online' ? '#2f7dcd' : ''}`"
+              class="el-icon-user-solid"
+            ></i> -->
           </p>
           <span class="time" v-text="getTimes(item.lastMsgTime)"></span>
           <p

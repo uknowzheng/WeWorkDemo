@@ -3,9 +3,7 @@
   <div class="message">
     <header class="header selectNone" v-drag>
       <div class="friendName">
-        <span style="cursor: pointer" @click="showChatInfo">{{
-          selectedChat.contactName
-        }}</span>
+        <span style="cursor: pointer">{{ selectedChat.contactName }}</span>
       </div>
       <!-- <i
         style="cursor: pointer"
@@ -66,7 +64,7 @@
                 @click="
                   showImgWindow({
                     showImgWindow: true,
-                    src: item.msgContent,
+                    src: item.msgContent || 'static/images/file.png',
                     width: 1280,
                     height: 720,
                   })
@@ -105,7 +103,16 @@
                 v-html="replaceFace(item.msgContent || '无消息')"
               ></div>
             </div>
-            <i :class="item.isRead > 0 ? 'el-icon-success' : 'el-icon-error'" />
+            <i
+              v-if="isSelf(item.senderId)"
+              style="width: 16px; height: 16px"
+              :class="getMessageStatus(item.msgStatus)"
+            ></i>
+            <span
+              v-if="isSelf(item.senderId)"
+              style="font-size: 6px; color: #aaaaaa"
+              >{{ item.isRead > 0 ? "已读" : "未读" }}</span
+            >
           </div>
         </li>
       </ul>
@@ -139,6 +146,7 @@ export default {
       };
     },
   },
+
   data() {
     return {
       showMessages: [],
@@ -181,6 +189,22 @@ export default {
     ...mapActions({
       showImgWindow: "system/showImgWindow",
     }),
+    getMessageStatus(statusCode) {
+      switch (statusCode) {
+        case -1:
+          return "el-icon-close";
+        case 0:
+          return "el-icon-loading";
+        case 1:
+          return "el-icon-check";
+        case 2:
+          return "el-icon-time";
+        case 3:
+          return "el-icon-back";
+        default:
+          return "";
+      }
+    },
     mousewheel() {
       if (this.pageIndex == 0) {
         return;
@@ -231,13 +255,14 @@ export default {
       }
     },
     openMenu(e, item) {
+      const isSelf = this.$store.state.user.info.wxid === item.senderId;
       let info = {
         clientX: e.clientX,
         clientY: e.clientY,
-        self: item.self,
+        self: isSelf,
         visible: true,
         visibleIng: true,
-        info: item.self ? this.user : this.selectedChatFriend,
+        info: isSelf ? this.user : this.selectedChatFriend,
       };
       this.$store.commit("system/setHeadMenu", info);
     },

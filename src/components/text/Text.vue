@@ -24,9 +24,9 @@
           <input type="file" @change="selectFile($event)" ref="selectFile" />
         </a>
       </span>
-      <span class="operation-icon">
+      <!-- <span class="operation-icon">
         <a href="javascript:;" class="icon el-icon-time"></a>
-      </span>
+      </span> -->
 
       <transition name="showbox">
         <div class="emojiBox" v-show="showEmoji">

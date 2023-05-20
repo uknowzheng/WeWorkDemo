@@ -63,15 +63,12 @@ const mutations = {
     );
     result.lastMsgTime = message.msgTime;
     result.messages.push(message);
-    // if (msg.type == 2) {
-    //   let file = base64toFile(msg.content.src, "file");
-    //   // 上传图片
-    //   return;
-    // }
-    // if (msg.type == 3) {
-    //   // 上传文件
-    //   return;
-    // }
+  },
+  changeMessageStatus: (state, data) => {
+    const { contactId, id, status } = data;
+    let chat = state.chatlist.find((session) => session.chatId === contactId);
+    let message = chat.messages.find((msg) => msg.id === id);
+    message.msgStatus = status;
   },
 
   // 置顶聊天
@@ -102,12 +99,14 @@ const actions = {
   selectSession: async ({ commit }, value) => {
     let chat = state.chatlist.find((session) => session.chatId === value);
     chat.messages.forEach(async (msg) => {
-      if (!msg.isRead) {
-        await setRead({
-          contactId: msg.contactId,
-          id: msg.id,
-        });
-        msg.isRead = 1;
+      if (msg.senderId !== state.user.info.wxid) {
+        if (!msg.isRead) {
+          await setRead({
+            contactId: msg.contactId,
+            id: msg.id,
+          });
+          msg.isRead = 1;
+        }
       }
     });
     commit("selectSession", value);
@@ -288,7 +287,7 @@ const actions = {
       showTime: showTime,
       contactId: reqData.contactId,
       id: id,
-      isRead: 1,
+      isRead: 0,
       msgContent: reqData.msgContent,
       msgExtend: content,
       msgStatus: status,
@@ -298,11 +297,11 @@ const actions = {
       senderId: ownerId,
       senderName: rootState.user.info.username,
     };
-    debugger;
     commit("sendMessage", {
       message,
     });
   },
+
   topChat: ({ commit }, chat) => commit("topChat", chat),
 };
 

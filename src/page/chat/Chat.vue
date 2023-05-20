@@ -8,16 +8,16 @@
       <MessageChat class="message" :key="selectChatId"></MessageChat>
       <VText class="text"></VText>
     </div>
-    <div v-if="isShow" class="chatInfo">
+    <!-- <div v-if="isShow" class="chatInfo">
       <FriendChatInfo id="info"></FriendChatInfo>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
 import SearchList from "@/components/search/SearchList";
 import ChatList from "@/components/chatlist/ChatList";
-import FriendChatInfo from "@/components/chatlist/FriendChatInfo";
+// import FriendChatInfo from "@/components/chatlist/FriendChatInfo";
 import MessageChat from "@/components/message/MessageChat";
 import VText from "@/components/text/Text";
 import { mapGetters, mapState } from "vuex";
@@ -25,7 +25,7 @@ export default {
   components: {
     SearchList,
     ChatList,
-    FriendChatInfo,
+    // FriendChatInfo,
     VText,
     MessageChat,
   },

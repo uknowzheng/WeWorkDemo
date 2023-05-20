@@ -95,10 +95,9 @@ const getters = {
   },
   // 筛选出含有搜索值的好友列表
   searchedFriendlist(state, params, rootState) {
-    let friends = state.friendlist;
-    // .filter((friends) =>
-    //   friends.username.includes(rootState.system.searchText)
-    // );
+    let friends = state.friendlist.filter((friends) =>
+      friends.contactName.includes(rootState.system.searchText)
+    );
     return friends;
   },
   // 通过当前选择是哪个好友匹配相应的好友
@@ -110,8 +109,9 @@ const getters = {
   },
   selectedChatFriend(state, getters, rootState) {
     let friend = state.friendlist.find(
-      (friend) => friend.username === rootState.chat.selectChatId
+      (friend) => friend.contactId === rootState.chat.selectChatId
     );
+    debugger;
     return friend;
   },
 

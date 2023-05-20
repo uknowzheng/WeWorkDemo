@@ -10,72 +10,48 @@
     <div class="esInfo">
       <div class="left">
         <div class="people">
-          <div class="nickname">{{ user.contactName }}</div>
-          <div
-            :class="[user.sex === 1 ? 'gender-male' : 'gender-female']"
-          ></div>
+          <div class="nickname">{{ user.username || user.contactName }}</div>
           <div class="infoItem">
             <div class="item wxid">
               <div class="lable" style="width: 40px">微信号:</div>
               <div class="lable" style="margin-left: 5px">
-                {{ user.contactId }}
+                {{ user.wxid || "-" }}
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="right">
-        <img class="avatar" width="60" height="60" :src="user.avatar" />
+        <img
+          class="avatar"
+          width="60"
+          height="60"
+          :src="user.avatar || user.contactAvatar"
+        />
       </div>
     </div>
     <div class="division"></div>
     <div class="infoItem">
-      <div v-if="!headMenu.self && user.remark != null" class="item">
-        <span class="lable">备&emsp;注</span>
-        <span
-          class="value editText"
-          @blur="updateRemark($event)"
-          :contentEditable="
-            !headMenu.self && user.initial != null && user.initial.trim() !== ''
-          "
-          >{{ user.remark }}</span
-        >
-      </div>
-      <div v-if="headMenu.type == 2" class="item">
-        <span class="lable">群昵称</span>
-        <span class="value">白云三手房东</span>
-      </div>
       <div class="item">
         <span class="lable">地&emsp;区</span>
-        <span class="value">{{ user.area }}</span>
+        <span class="value">安道尔</span>
       </div>
-      <div v-if="!headMenu.self && user.origin != null" class="item">
+      <div class="item">
         <span class="lable">来&emsp;源</span>
-        <span class="value">{{ user.origin }}</span>
-      </div>
-      <div v-if="user.label != null" class="item">
-        <span class="lable">标&emsp;签</span>
-        <span class="value">{{ user.label }}</span>
+        <span class="value">号码搜索</span>
       </div>
     </div>
-    <div
-      class="signature"
-      :class="{ editText: headMenu.self }"
-      @blur="updateSignature($event)"
-      :contentEditable="headMenu.self"
-    >
-      {{ user.signature }}
-    </div>
+    <div class="signature">这个人比较懒没有留下什么签名！</div>
     <div class="division"></div>
-    <div v-if="!isFriend && !isSelf" class="send">
+    <!-- <div v-if="!isFriend && !isSelf" class="send">
       <span>添加到通讯录</span>
-    </div>
+    </div> -->
     <div v-if="isFriend" class="send" @click="send">
       <span>发消息</span>
     </div>
-    <div v-if="isSelf" class="send">
+    <!-- <div v-if="isSelf" class="send">
       <span>发消息</span>
-    </div>
+    </div> -->
   </div>
 </template>
 

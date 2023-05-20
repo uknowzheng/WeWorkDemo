@@ -9,11 +9,10 @@
             <div class="nickname">{{ selectedFriend.contactName }}</div>
             <i
               style="margin-left: 5px"
-              :class="
-                selectedFriend.isOnline === 'online'
-                  ? 'el-icon-success'
-                  : 'el-icon-error'
-              "
+              :style="`color:${
+                selectedFriend.isOnline === 'online' ? '#2f7dcd' : ''
+              }`"
+              class="el-icon-user-solid"
             ></i>
           </div>
         </div>

@@ -97,6 +97,8 @@ export default {
     width: 37px;
     height: 37px;
     margin: 25px 9px 0px 9px;
+    background: #FFF;
+    border-radius: 5px;
   }
 
   .navbar {

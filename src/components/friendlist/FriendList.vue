@@ -17,9 +17,8 @@
             {{ item.contactName }}
             <i
               style="margin-left: 5px"
-              :class="
-                item.isOnline === 'online' ? 'el-icon-success' : 'el-icon-error'
-              "
+              :style="`color:${item.isOnline === 'online' ? '#2f7dcd' : ''}`"
+              class="el-icon-user-solid"
             ></i>
           </div>
         </div>
