@@ -49,7 +49,7 @@ export function setRead(
 export function registerWebSocket() {
   const token = getCookie(TOKEN_KEY);
   const socket = new CustomSocketIO(
-    `ws://118.31.43.13:8008/banana/websocket/msg/${token}`
+    `ws://localhost/banana/websocket/msg/${token}`
   );
 
   // 建立连接
