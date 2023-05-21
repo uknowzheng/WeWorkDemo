@@ -96,10 +96,10 @@ const mutations = {
   },
 };
 const actions = {
-  selectSession: async ({ commit }, value) => {
+  selectSession: async ({ commit, rootState }, value) => {
     let chat = state.chatlist.find((session) => session.chatId === value);
     chat.messages.forEach(async (msg) => {
-      if (msg.senderId !== state.user.info.wxid) {
+      if (msg.senderId !== rootState.user.info.wxid) {
         if (!msg.isRead) {
           await setRead({
             contactId: msg.contactId,

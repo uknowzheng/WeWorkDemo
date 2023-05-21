@@ -65,8 +65,8 @@
                   showImgWindow({
                     showImgWindow: true,
                     src: item.msgContent || 'static/images/file.png',
-                    width: 1280,
-                    height: 720,
+                    width: (item.msgExtend && item.msgExtend.width) || 1280,
+                    height: (item.msgExtend && item.msgExtend.height) || 720,
                   })
                 "
                 :src="item.msgContent"
@@ -108,11 +108,11 @@
               style="width: 16px; height: 16px"
               :class="getMessageStatus(item.msgStatus)"
             ></i>
-            <span
+            <!-- <span
               v-if="isSelf(item.senderId)"
               style="font-size: 6px; color: #aaaaaa"
               >{{ item.isRead > 0 ? "已读" : "未读" }}</span
-            >
+            > -->
           </div>
         </li>
       </ul>

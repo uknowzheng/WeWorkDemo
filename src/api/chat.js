@@ -57,10 +57,12 @@ export function registerWebSocket() {
   // 设置不同类型响应的处理函数
   socket.setResponseHandler("heartBeat", () => {
     console.log("处理类型为heartBeat的响应!");
-    socket.sendMessage({
-      type: "heartBeat",
-      data: "1",
-    });
+    setInterval(() => {
+      socket.sendMessage({
+        type: "heartBeat",
+        data: "1",
+      });
+    }, 3000);
   });
 
   socket.setResponseHandler("chatSendStatus", (data) => {
@@ -77,6 +79,18 @@ export function registerWebSocket() {
     Vue.prototype.$store.commit("friend/onlineStatusChange", data);
   });
 
-  // 断开连接
-  // socket.disconnect();
+  socket.setResponseHandler("warming", (data) => {
+    console.log("收到warming消息:", data);
+    Vue.prototype.$message.warning(data);
+  });
+
+  Vue.prototype.$store.subscribeAction({
+    after: (action) => {
+      console.log(`操作 ${action.type} 触发后`);
+      if (action.type === "user/handleLogout") {
+        // 用户退出登陆后，要清理连接
+        socket.disconnect();
+      }
+    },
+  });
 }

@@ -1,8 +1,12 @@
+let reconnectInterval = 2000; // 重连间隔时间，单位为毫秒
+
 class CustomSocketIO {
   constructor(url) {
     this.url = url;
     this.socket = null;
     this.responseHandlers = {};
+    this.isConnected = false; // 记录连接状态
+    this.timeout = null;
   }
 
   connect() {
@@ -12,6 +16,7 @@ class CustomSocketIO {
     // 监听连接建立事件
     this.socket.onopen = () => {
       console.log("WebSocket 连接已建立");
+      this.isConnected = true;
     };
 
     // 监听消息接收事件
@@ -28,17 +33,28 @@ class CustomSocketIO {
     // 监听连接关闭事件
     this.socket.onclose = () => {
       console.log("WebSocket 连接已关闭");
+      this.isConnected = false;
+      console.log("尝试2s后重连");
+      this.timeout = setTimeout(() => {
+        this.connect();
+      }, reconnectInterval);
     };
 
     // 监听连接错误事件
     this.socket.onerror = (error) => {
       console.error("WebSocket 错误:", error);
+      this.isConnected = false;
+      console.log("尝试2s后重连");
+      this.timeout = setTimeout(() => {
+        this.connect();
+      }, reconnectInterval);
     };
   }
 
   disconnect() {
     if (this.socket) {
-      this.socket.disconnect();
+      this.timeout && clearTimeout(this.timeout);
+      this.socket.close();
     }
   }
 
