@@ -132,7 +132,7 @@ export default {
     }),
     // 将内容中属于表情的部分替换成emoji图片标签
     replaceFace(msg) {
-      // 目前只做 1000:系统消息 2001：文字消息 2002 ：图片消息 2003 ：视频消息2005 文件消息
+      // 目前只做 1000:系统消息 2001：文字消息 2002 ：图片消息 2003 ：视频消息2010 文件消息
       if (msg === "") {
         return "";
       }
@@ -142,22 +142,10 @@ export default {
       if (msg.msgType == 2003) {
         return "[视频]]";
       }
-      if (msg.msgType == 2005) {
+      if (msg.msgType == 2010) {
         return "[文件]";
       }
       let con = msg.msgContent;
-      if (con.includes("@::tt;;@")) {
-        let emojis = this.emojis;
-        for (let i = 0; i < emojis.length; i++) {
-          con = con.replace(
-            emojis[i].reg,
-            '<img src="static/emoji/' +
-              emojis[i].file +
-              '"  alt="" style="vertical-align: middle; width: 15px; height: 15px" />'
-          );
-        }
-        return con;
-      }
       return con;
     },
     openMenu(e, data) {

@@ -49,9 +49,8 @@
               "
             />
             <!-- 以下是信息载体展示方式 -->
-            <!-- 1000：系统消息 2001：文字消息 2002：图片消息 2003：语音消息 2004：视频消息 2005：图文链接 2006：名片消息 2007：表情消息 2010：文件消息 2013：小程序消息 2015：公众号消息 -->
             <!-- 目前只做 系统消息 2001：文字消息 2002 ：图片消息 2003 ：视频消息
-            2005 文件消息 -->
+            2010 文件消息 -->
             <div
               class="content"
               :class="{
@@ -78,7 +77,7 @@
                 v-html="item.msgContent || '[视频消息]'"
               ></div>
               <div
-                v-if="item.msgType == 2005"
+                v-if="item.msgType == 2010"
                 class="file-msg"
                 @click="downloadFile(item.msgContent)"
               >
@@ -192,7 +191,7 @@ export default {
     getMessageStatus(statusCode) {
       switch (statusCode) {
         case -1:
-          return "el-icon-close";
+          return "el-icon-warning-outline red-icon";
         case 0:
           return "el-icon-loading";
         case 1:
@@ -292,6 +291,10 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.red-icon{
+  color:red;
+}
+
 .message {
   width: 100%;
   height: 100;

@@ -258,7 +258,7 @@ const actions = {
         break;
       case 2002:
       case 2003:
-      case 2005:
+      case 2010:
         reqData = {
           contactId: selectChatId,
           msgContent: content.src,
