@@ -5,6 +5,9 @@ import config from "@/config";
 import store from "./store/index.js";
 import cdire from "./libs/directive/index";
 import ElementUI from "element-ui";
+// 在这里引入安装包和样式
+import WeixinEmojis from "vue-weixin-emojis";
+import "vue-weixin-emojis/dist/vue-weixin-emojis.css";
 import "element-ui/lib/theme-chalk/index.css";
 import "@/assets/icons/iconfont.css";
 
@@ -21,6 +24,7 @@ Vue.prototype.$store = store;
 Vue.config.productionTip = false;
 
 Vue.use(ElementUI);
+Vue.use(WeixinEmojis, { url: "static/images/wx_emoji.png" });
 // 拖拽命令
 const directive = {
   drag: cdire.drag,

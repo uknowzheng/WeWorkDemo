@@ -17,6 +17,7 @@
     "socket.io-client": "^4.6.1",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
+    "vue-weixin-emojis": "^0.1.13",
     "vuex": "^3.4.0"
   },
   "devDependencies": {

@@ -111,7 +111,6 @@ const getters = {
     let friend = state.friendlist.find(
       (friend) => friend.contactId === rootState.chat.selectChatId
     );
-    debugger;
     return friend;
   },
 

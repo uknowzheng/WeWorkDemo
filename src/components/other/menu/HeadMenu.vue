@@ -46,9 +46,9 @@
     <!-- <div v-if="!isFriend && !isSelf" class="send">
       <span>添加到通讯录</span>
     </div> -->
-    <div v-if="isFriend" class="send" @click="send">
+    <!-- <div v-if="isFriend" class="send" @click="send">
       <span>发消息</span>
-    </div>
+    </div> -->
     <!-- <div v-if="isSelf" class="send">
       <span>发消息</span>
     </div> -->

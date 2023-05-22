@@ -75,7 +75,7 @@
               <div
                 v-if="item.msgType == 2003"
                 class="text"
-                v-html="replaceFace(item.msgContent || '[视频消息]')"
+                v-html="item.msgContent || '[视频消息]'"
               ></div>
               <div
                 v-if="item.msgType == 2005"
@@ -100,7 +100,7 @@
               <div
                 v-if="item.msgType == 2001"
                 class="text"
-                v-html="replaceFace(item.msgContent || '无消息')"
+                v-html="$string2emoji(item.msgContent || '无消息')"
               ></div>
             </div>
             <i
@@ -268,23 +268,6 @@ export default {
     },
     showChatInfo() {
       this.$parent.showChatInfo();
-    },
-    //  在发送信息之后，将输入的内容中属于表情的部分替换成emoji图片标签
-    //  再经过v-html 渲染成真正的图片
-    replaceFace(con) {
-      if (con.includes("@::tt;;@")) {
-        let emojis = this.emojis;
-        for (let i = 0; i < emojis.length; i++) {
-          con = con.replace(
-            emojis[i].reg,
-            '<img src="static/emoji/' +
-              emojis[i].file +
-              '"  alt="" style="vertical-align: middle; width: 24px; height: 24px" />'
-          );
-        }
-        return con;
-      }
-      return con;
     },
     downloadFile(src) {
       window.open(src);

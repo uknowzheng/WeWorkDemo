@@ -30,13 +30,12 @@
 
       <transition name="showbox">
         <div class="emojiBox" v-show="showEmoji">
-          <li v-for="item in emojis" :key="item.id">
-            <img
-              :src="'static/emoji/' + item.file"
-              :data="item.code"
-              @click="choiceEmoji(item)"
-            />
-          </li>
+          <emoji-picker
+            v-model="text_content"
+            button
+            style="background: #fff"
+            height="200px"
+          />
         </div>
       </transition>
     </div>
@@ -71,8 +70,7 @@ export default {
       warn: false,
       showEmoji: false,
       file: null,
-      emojiReg:
-        /\<img lwj=\"\" wx=\"[\s\S]*\" src=\"static\/emoji\/[\s\S]*\.gif\" style=\"vertical-align: middle; width: 24px; height: 24px\" jwl=\"\"\>/g,
+      text_content: "",
       imgReg:
         /\<img cct=\"1\" style=\"max-width: 140px;max-height: 160px;\" id=\"[0-9]{13}\"/g,
       fileReg:
@@ -82,7 +80,6 @@ export default {
   computed: {
     ...mapState({
       selectChatId: (state) => state.chat.selectChatId,
-      emojis: (state) => state.system.emojis,
       systemFileIcon: (state) => state.system.systemFileIcon,
     }),
     ...mapGetters({ selectedChat: "chat/selectedChat" }),
@@ -133,36 +130,6 @@ export default {
     },
     showEmojiList() {
       this.showEmoji = true;
-    },
-    // 选择表情
-    choiceEmoji(item) {
-      this.showEmoji = false;
-      let textarea = this.$refs.text;
-      let content = textarea.innerHTML;
-      if (this.emojiNumIsOut(content)) {
-        alert("表情数量不允许超过5个");
-        return;
-      }
-      content += item.sign;
-      let result = this.replaceEmoji(content);
-      textarea.innerHTML = result;
-    },
-    replaceEmoji(con) {
-      if (con.includes("@::tt;;@")) {
-        let emojis = this.emojis;
-        for (let i = 0; i < emojis.length; i++) {
-          con = con.replace(
-            emojis[i].reg,
-            '<img lwj="" wx="' +
-              emojis[i].id +
-              '" src="static/emoji/' +
-              emojis[i].file +
-              '" style="vertical-align: middle; width: 24px; height: 24px" jwl=""/>'
-          );
-        }
-        return con;
-      }
-      return con;
     },
     // 选中图片
     selectImg(e) {
@@ -307,12 +274,8 @@ export default {
         return;
       }
 
-      if (this.emojiNumIsOut(text)) {
-        alert("表情数量不允许超过5个");
-        return;
-      }
       // 替换表情
-      content = this.replaceEmojiToCode(text);
+      content = text;
       if (content.length < 1) {
         this.warn = true;
         setTimeout(() => {
@@ -329,32 +292,6 @@ export default {
         type: type,
       };
       this.$store.dispatch("chat/sendMessage", msg);
-    },
-    // 将表情替换成code
-    replaceEmojiToCode(content) {
-      if (content.includes("<img lwj")) {
-        let _this = this;
-        while (content.includes("<img lwj")) {
-          let currentId = "";
-          let emojiGif = "";
-          let sign = "";
-          content.replace(this.emojiReg, function (match, index, originText) {
-            let id = content.substring(index + 16, index + 16 + 32);
-            currentId = id;
-            _this.emojis
-              .filter((item) => item.id === id)
-              .map((emoji) => {
-                emojiGif = emoji.file;
-                sign = emoji.sign;
-              });
-          });
-          let signReg = this.getEmojiSignReg(currentId, emojiGif);
-          content = content.replace(signReg, sign);
-        }
-        // content = content.replace(reg, sign);
-        return content;
-      }
-      return content;
     },
     // 将图片替换成消息内容
     replaceImgToMsg(content) {
@@ -393,25 +330,6 @@ export default {
       }
       return content;
     },
-    getEmojiSignReg(id, emojiGif) {
-      let emoji = emojiGif.substring(0, emojiGif.indexOf("."));
-      return new RegExp(
-        '\\<img lwj=\\"\\" wx=\\"' +
-          id +
-          '\\" src=\\"static\\/emoji\\/' +
-          emoji +
-          '\\.gif\\" style=\\"vertical-align: middle; width: 24px; height: 24px\\" jwl=\\"\\"\\>',
-        "g"
-      );
-    },
-    emojiNumIsOut(content) {
-      let ref = /\<img lwj=\"\" wx=\"[a-z0-9]{32}\"/g;
-      let emoji = content.match(ref);
-      if (emoji && emoji.length >= 5) {
-        return true;
-      }
-      return false;
-    },
   },
   // 在进入的时候 聚焦输入框
   mounted() {
@@ -423,6 +341,11 @@ export default {
       setTimeout(() => {
         this.$refs.text.focus();
       }, 0);
+    },
+    text_content(newVal, oldVal) {
+      const add = newVal.substring(oldVal.length, newVal.length);
+      const textarea = this.$refs.text;
+      textarea.innerText = textarea.innerText + add;
     },
     // 当输入框中的值为空时 弹出提示  并在一秒后消失
     content() {
@@ -519,7 +442,7 @@ export default {
       flex-wrap: wrap;
       top: -210px;
       left: -100px;
-      width: 300px;
+      width: 500px;
       height: 200px;
       padding: 5px;
       background-color: #fff;
