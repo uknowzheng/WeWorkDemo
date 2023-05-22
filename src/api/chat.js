@@ -2,7 +2,7 @@ import { post, uploadFile } from "../libs/request";
 import CustomSocketIO from "../libs/websocket";
 import { getCookie, TOKEN_KEY } from "../libs/util";
 import Vue from "vue";
-
+import config from "../config";
 export function dialogBox() {
   return post("/banana/im/chat/dialogBox");
 }
@@ -49,7 +49,7 @@ export function setRead(
 export function registerWebSocket() {
   const token = getCookie(TOKEN_KEY);
   const socket = new CustomSocketIO(
-    `ws://localhost/banana/websocket/msg/${token}`
+    `${config.wsHost}/banana/websocket/msg/${token}`
   );
 
   // 建立连接
